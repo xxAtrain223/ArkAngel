@@ -1,0 +1,16 @@
+[submodule "SFGUI"]
+	path = SFGUI
+	url = git@github.com:xxAtrain223/SFGUI.git
+	branch = cmake
+[submodule "ginseng"]
+	path = ginseng
+	url = git@github.com:dbralir/ginseng.git
+[submodule "raspberry"]
+	path = raspberry
+	url = git@github.com:dbralir/raspberry.git
+[submodule "bait"]
+	path = bait
+	url = git@github.com:dbralir/bait.git
+[submodule "AngelScript"]
+	path = AngelScript
+	url = git@github.com:xxAtrain223/AngelScript.git
