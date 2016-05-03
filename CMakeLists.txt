@@ -25,6 +25,7 @@ target_link_libraries(lib_ArkAngel bait)
 target_link_libraries(lib_ArkAngel ${BOX2D_LIBRARIES})
 target_link_libraries(lib_ArkAngel AngelScript)
 target_link_libraries(lib_ArkAngel jsoncpp)
+add_definitions(-DSFGUI_STATIC)
 
 add_executable(ArkAngel "src/Main.cpp")
 set_property(TARGET ArkAngel PROPERTY CXX_STANDARD 14)
