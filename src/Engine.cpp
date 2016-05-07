@@ -9,7 +9,6 @@ Engine::Engine() :
     TotalTime(0)
 {
     Console->SetTitle("Console");
-
     ConsoleDesktop.Add(Console);
 
     window.resetGLStates();

@@ -21,11 +21,11 @@ Terminal::Ptr Terminal::Create(char style)
 
     terminal->LogBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
 
-    terminal->ScrolledWindow = sfg::ScrolledWindow::Create();
-    terminal->ScrolledWindow->SetScrollbarPolicy(sfg::ScrolledWindow::ScrollbarPolicy::HORIZONTAL_AUTOMATIC |
+    terminal->ScrollWindow = sfg::ScrolledWindow::Create();
+    terminal->ScrollWindow->SetScrollbarPolicy(sfg::ScrolledWindow::ScrollbarPolicy::HORIZONTAL_AUTOMATIC |
                                        sfg::ScrolledWindow::ScrollbarPolicy::VERTICAL_AUTOMATIC);
-    terminal->ScrolledWindow->AddWithViewport(terminal->LogBox);
-    terminal->ScrolledWindow->SetRequisition(sf::Vector2f(400.f, 200.f));
+    terminal->ScrollWindow->AddWithViewport(terminal->LogBox);
+    terminal->ScrollWindow->SetRequisition(sf::Vector2f(400.f, 200.f));
 
     auto entryBox = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 5.f);
 
@@ -39,8 +39,8 @@ Terminal::Ptr Terminal::Create(char style)
     entryBox->Pack(button, false, true);
 
     auto windowBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 5.f);
-    windowBox->Pack(terminal->ScrolledWindow, true, true);
     windowBox->Pack(entryBox, false, true);
+    windowBox->Pack(terminal->ScrollWindow, true, true);
 
     terminal->Add(windowBox);
 
@@ -71,8 +71,16 @@ void Terminal::EnterCommand()
     if (text.length() > 0) {
         auto label = sfg::Label::Create(text);
         label->SetAlignment(sf::Vector2f(0.f, 0.f));
-        LogBox->PackEnd(label);
+        LogBox->PackStart(label);
+
+        LastCommand = text;
+        GetSignals().Emit(OnCommandEntered);
     }
     Entry->SetText("");
     Entry->GrabFocus();
 }
+
+std::string& Terminal::GetLastCommand() {
+    return LastCommand;
+}
+

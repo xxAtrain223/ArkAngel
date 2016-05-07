@@ -10,7 +10,7 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
 
-class SFGUI_API Terminal : public sfg::Window {
+class Terminal : public sfg::Window {
 public:
     typedef std::shared_ptr<Terminal> Ptr;
     typedef std::shared_ptr<const Terminal> PtrConst;
@@ -21,12 +21,16 @@ public:
                                    sfg::Window::Style::CLOSE);
 
     void HandleEvent(const sf::Event& event);
+    std::string& GetLastCommand();
+
+    static sfg::Signal::SignalID OnCommandEntered;
 
 protected:
-    sfg::ScrolledWindow::Ptr ScrolledWindow;
+    sfg::ScrolledWindow::Ptr ScrollWindow;
     sfg::Box::Ptr LogBox;
     sfg::Entry::Ptr Entry;
-    sfg::Alignment::Ptr alignment;
+
+    std::string LastCommand = "";
 
     Terminal(char style);
 
