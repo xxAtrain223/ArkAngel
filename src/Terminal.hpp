@@ -23,6 +23,10 @@ public:
     void HandleEvent(const sf::Event& event);
     std::string& GetLastCommand();
 
+    void Print(std::string Str);
+    void PrintLog(std::string Str);
+    void PrintError(std::string Str);
+
     static sfg::Signal::SignalID OnCommandEntered;
 
 protected:
@@ -35,6 +39,7 @@ protected:
     Terminal(char style);
 
     void EnterCommand();
+    void PrintClass(std::string Str, std::string Class);
 };
 
 

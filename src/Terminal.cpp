@@ -8,6 +8,8 @@
 
 using namespace std;
 
+sfg::Signal::SignalID Terminal::OnCommandEntered = 0;
+
 Terminal::Terminal(char style) : Window(style)
 {
 }
@@ -39,8 +41,8 @@ Terminal::Ptr Terminal::Create(char style)
     entryBox->Pack(button, false, true);
 
     auto windowBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 5.f);
-    windowBox->Pack(entryBox, false, true);
     windowBox->Pack(terminal->ScrollWindow, true, true);
+    windowBox->Pack(entryBox, false, true);
 
     terminal->Add(windowBox);
 
@@ -69,9 +71,7 @@ void Terminal::EnterCommand()
 {
     const string text = Entry->GetText();
     if (text.length() > 0) {
-        auto label = sfg::Label::Create(text);
-        label->SetAlignment(sf::Vector2f(0.f, 0.f));
-        LogBox->PackStart(label);
+        Print("> " + text);
 
         LastCommand = text;
         GetSignals().Emit(OnCommandEntered);
@@ -80,7 +80,30 @@ void Terminal::EnterCommand()
     Entry->GrabFocus();
 }
 
-std::string& Terminal::GetLastCommand() {
+std::string& Terminal::GetLastCommand()
+{
     return LastCommand;
 }
 
+void Terminal::PrintClass(std::string Str, std::string Class)
+{
+    auto label = sfg::Label::Create(Str);
+    label->SetAlignment(sf::Vector2f(0.f, 0.f));
+    label->SetClass(Class);
+    LogBox->PackEnd(label);
+}
+
+void Terminal::Print(std::string Str)
+{
+    PrintClass(Str, "");
+}
+
+void Terminal::PrintLog(std::string Str)
+{
+    PrintClass(Str, "Log");
+}
+
+void Terminal::PrintError(std::string Str)
+{
+    PrintClass(Str, "Error");
+}

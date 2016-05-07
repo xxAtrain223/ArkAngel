@@ -1,5 +1,7 @@
 #include "Engine.hpp"
 
+#include <string>
+
 using namespace std;
 
 Engine::Engine() :
@@ -10,6 +12,7 @@ Engine::Engine() :
 {
     Console->SetTitle("Console");
     ConsoleDesktop.Add(Console);
+    ConsoleDesktop.LoadThemeFromFile("data/theme.css");
 
     window.resetGLStates();
 }
