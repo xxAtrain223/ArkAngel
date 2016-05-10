@@ -46,8 +46,25 @@ Terminal::Ptr Terminal::Create(char style)
 
     terminal->Add(windowBox);
 
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "Gap", 10.f);
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "BorderColor", sf::Color( 0x5a, 0x6a, 0x50 ));
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "BorderColorShift", 0);
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ));
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "TitlePadding", 5.f);
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "HandleSize", 10.f);
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "ShadowDistance", 3.f);
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "ShadowAlpha", 100.f);
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "CloseHeight", 10.f);
+    sfg::Context::Get().GetEngine().SetProperty("Terminal", "CloseThickness", 3.f);
+
     terminal->RequestResize();
     return terminal;
+}
+
+const std::string& Terminal::GetName() const
+{
+    static const std::string name("Terminal");
+    return name;
 }
 
 void Terminal::HandleEvent(const sf::Event& event)

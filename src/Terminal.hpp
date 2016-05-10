@@ -20,7 +20,9 @@ public:
                                    sfg::Window::Style::RESIZE |
                                    sfg::Window::Style::CLOSE);
 
+    const std::string& GetName() const override;
     void HandleEvent(const sf::Event& event);
+
     std::string& GetLastCommand();
 
     void Print(std::string Str);
