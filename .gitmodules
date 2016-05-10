@@ -14,3 +14,6 @@
 [submodule "AngelScript"]
 	path = AngelScript
 	url = git@github.com:xxAtrain223/AngelScript.git
+[submodule "print"]
+	path = print
+	url = git@github.com:xxAtrain223/print.git
