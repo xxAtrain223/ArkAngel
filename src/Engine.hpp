@@ -8,6 +8,7 @@
 #include <SFGUI/Widgets.hpp>
 
 #include "Terminal.hpp"
+#include "Print.hpp"
 
 class Engine
 {
@@ -23,6 +24,18 @@ private:
     void poll_events();
     void update();
     void draw();
+
+    std::stringstream outBuf;
+    std::stringstream logBuf;
+    std::stringstream errBuf;
+
+    std::streambuf* oldOut;
+    std::streambuf* oldLog;
+    std::streambuf* oldErr;
+
+    void PrepareOutputBuffers();
+    void PrintOutputBuffers();
+    void ResetOutputBuffers();
 
 public:
     sf::RenderWindow window;

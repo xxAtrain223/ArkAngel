@@ -1,6 +1,7 @@
 #include "Engine.hpp"
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ Engine::Engine() :
 {
     Console->SetTitle("Console");
     ConsoleDesktop.Add(Console);
-    ConsoleDesktop.LoadThemeFromFile("data/theme.css");
+    ConsoleDesktop.LoadThemeFromFile("data/sfgui.theme");
 
     window.resetGLStates();
 }
@@ -23,9 +24,14 @@ void Engine::go()
     SFGClock.restart();
     while (window.isOpen())
     {
+        PrepareOutputBuffers();
+
         poll_events();
         update();
         draw();
+
+        PrintOutputBuffers();
+        ResetOutputBuffers();
     }
 }
 
@@ -63,4 +69,22 @@ void Engine::draw()
     window.clear();
     Sfgui.Display(window);
     window.display();
+}
+
+void Engine::PrepareOutputBuffers() {
+    oldOut = std::cout.rdbuf(outBuf.rdbuf());
+    oldLog = std::clog.rdbuf(logBuf.rdbuf());
+    oldErr = std::cerr.rdbuf(errBuf.rdbuf());
+}
+
+void Engine::PrintOutputBuffers() {
+    Console->Print(outBuf.str());
+    Console->PrintLog(logBuf.str());
+    Console->PrintError(errBuf.str());
+}
+
+void Engine::ResetOutputBuffers() {
+    std::cout.rdbuf(oldOut);
+    std::clog.rdbuf(oldLog);
+    std::cerr.rdbuf(oldErr);
 }
