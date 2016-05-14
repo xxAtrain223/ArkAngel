@@ -88,8 +88,6 @@ void Engine::update()
     float timeStep = EngineClock.restart().asSeconds();
     TotalTime += timeStep;
 
-    window.setTitle(to_string(1 / timeStep));
-
     if (SFGClock.getElapsedTime().asMicroseconds() >= 5000)
     {
         ConsoleDesktop.Update(static_cast<float>( SFGClock.getElapsedTime().asMicroseconds() ) / 1000000.f);
@@ -111,9 +109,17 @@ void Engine::PrepareOutputBuffers() {
 }
 
 void Engine::PrintOutputBuffers() {
-    Console->Print(OutBuf.str());
-    Console->PrintLog(LogBuf.str());
-    Console->PrintError(ErrBuf.str());
+    string outStr = OutBuf.str();
+    if (!outStr.empty())
+        Console->Print(outStr);
+
+    string logStr = LogBuf.str();
+    if (!logStr.empty())
+        Console->PrintLog(logStr);
+
+    string errStr = ErrBuf.str();
+    if (!errStr.empty())
+        Console->PrintError(errStr);
 }
 
 void Engine::ResetOutputBuffers() {
