@@ -124,3 +124,10 @@ void Terminal::PrintError(std::string Str)
 {
     PrintClass(Str, "Error");
 }
+
+void Terminal::PrintWarning(std::string Str)
+{
+    PrintClass(Str, "Warning");
+}
+
+

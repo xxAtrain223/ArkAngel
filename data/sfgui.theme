@@ -7,6 +7,10 @@ Label.Log {
     Color: #C6CBC4BE;
 }
 
+Label.Warning {
+    Color: #F0CB30FF;
+}
+
 Label.Error {
     Color: #F03230FF;
 }

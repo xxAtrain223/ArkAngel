@@ -2,8 +2,15 @@
 
 #include <string>
 #include <iostream>
+#include <regex>
 
 using namespace std;
+
+// Print the script string to the standard output stream
+void printfdsafdas(string &msg)
+{
+    Print(msg.c_str());
+}
 
 Engine::Engine() :
     window(sf::VideoMode(800, 600), "ArkAngel"),
@@ -14,6 +21,30 @@ Engine::Engine() :
     Console->SetTitle("Console");
     ConsoleDesktop.Add(Console);
     ConsoleDesktop.LoadThemeFromFile("data/sfgui.theme");
+
+    ScriptEngine = asCreateScriptEngine();
+    int r = ScriptEngine->SetMessageCallback(asMETHOD(Engine, AsMessageCallback), this, asCALL_THISCALL); assert(r >= 0);
+    RegisterStdString(ScriptEngine);
+    r = ScriptEngine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(printfdsafdas), asCALL_CDECL); assert(r >= 0);
+
+    ConsoleModule = ScriptEngine->GetModule("ConsoleModule", asGM_CREATE_IF_NOT_EXISTS);
+    ConsoleContext = ScriptEngine->CreateContext();
+
+    Console->GetSignal(Console->OnCommandEntered).Connect(std::bind([&]{
+        string command = Console->GetLastCommand();
+
+        regex rgx("^addvar\\(\"(.*)\"\\);?$");
+        smatch match;
+
+        if (std::regex_search(command, match, rgx)) {
+            ssub_match matched = match[1];
+            string var = matched.str() + ";";
+            ConsoleModule->CompileGlobalVar("addvar", var.c_str(), 0);
+        }
+        else
+            ExecuteString(ScriptEngine, command.c_str(), ConsoleModule, ConsoleContext);
+    }));
+
 
     window.resetGLStates();
 }
@@ -57,6 +88,8 @@ void Engine::update()
     float timeStep = EngineClock.restart().asSeconds();
     TotalTime += timeStep;
 
+    window.setTitle(to_string(1 / timeStep));
+
     if (SFGClock.getElapsedTime().asMicroseconds() >= 5000)
     {
         ConsoleDesktop.Update(static_cast<float>( SFGClock.getElapsedTime().asMicroseconds() ) / 1000000.f);
@@ -72,19 +105,39 @@ void Engine::draw()
 }
 
 void Engine::PrepareOutputBuffers() {
-    oldOut = std::cout.rdbuf(outBuf.rdbuf());
-    oldLog = std::clog.rdbuf(logBuf.rdbuf());
-    oldErr = std::cerr.rdbuf(errBuf.rdbuf());
+    OldOut = std::cout.rdbuf(OutBuf.rdbuf());
+    OldLog = std::clog.rdbuf(LogBuf.rdbuf());
+    OldErr = std::cerr.rdbuf(ErrBuf.rdbuf());
 }
 
 void Engine::PrintOutputBuffers() {
-    Console->Print(outBuf.str());
-    Console->PrintLog(logBuf.str());
-    Console->PrintError(errBuf.str());
+    Console->Print(OutBuf.str());
+    Console->PrintLog(LogBuf.str());
+    Console->PrintError(ErrBuf.str());
 }
 
 void Engine::ResetOutputBuffers() {
-    std::cout.rdbuf(oldOut);
-    std::clog.rdbuf(oldLog);
-    std::cerr.rdbuf(oldErr);
+    OutBuf.str(string());
+    LogBuf.str(string());
+    ErrBuf.str(string());
+    std::cout.rdbuf(OldOut);
+    std::clog.rdbuf(OldLog);
+    std::cerr.rdbuf(OldErr);
+}
+
+void Engine::AsMessageCallback(const asSMessageInfo *msg) {
+    string message = PrintStr("%$(%$, %$): %$", msg->section, msg->row, msg->col, msg->message);
+
+    switch(msg->type)
+    {
+        case asMSGTYPE_ERROR:
+            Console->PrintError(message);
+            break;
+        case asMSGTYPE_WARNING:
+            Console->PrintWarning(message);
+            break;
+        case asMSGTYPE_INFORMATION:
+            Console->PrintLog(message);
+            break;
+    }
 }

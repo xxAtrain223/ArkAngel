@@ -28,4 +28,13 @@ void PrintErr(const char* format, Ts&&... params)
     printer._print(format, std::forward<Ts>(params)...);
 }
 
+template <typename... Ts>
+std::string PrintStr(const char* format, Ts&&... params)
+{
+    std::stringstream out;
+    _PrintDetail<std::stringstream> printer(out);
+    printer._print(format, std::forward<Ts>(params)...);
+    return out.str();
+}
+
 #endif //ARKANGEL_PRINT_HPP

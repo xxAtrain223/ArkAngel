@@ -27,6 +27,7 @@ public:
 
     void Print(std::string Str);
     void PrintLog(std::string Str);
+    void PrintWarning(std::string Str);
     void PrintError(std::string Str);
 
     static sfg::Signal::SignalID OnCommandEntered;

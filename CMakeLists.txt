@@ -25,7 +25,7 @@ target_link_libraries(lib_ArkAngel raspberry)
 target_link_libraries(lib_ArkAngel bait)
 target_link_libraries(lib_ArkAngel print)
 target_link_libraries(lib_ArkAngel ${BOX2D_LIBRARIES})
-target_link_libraries(lib_ArkAngel AngelScript)
+target_link_libraries(lib_ArkAngel AngelScript AngelScript_scriptstdstring AngelScript_scriptbuilder AngelScript_scripthelper)
 target_link_libraries(lib_ArkAngel jsoncpp)
 add_definitions(-DSFGUI_STATIC)
 
