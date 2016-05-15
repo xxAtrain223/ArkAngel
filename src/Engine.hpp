@@ -21,6 +21,8 @@
 class Engine
 {
 private:
+    std::string WindowTitle;
+
     sfg::SFGUI Sfgui;
     sfg::Desktop ConsoleDesktop;
     sf::Clock SFGClock;
@@ -28,6 +30,17 @@ private:
 
     sf::Clock EngineClock;
     float TotalTime;
+
+    float FPSUpdateTime = 0.25;
+    float FPSTimeSinceUpdate = 0;
+    float FPS = 0;
+    float FPSFrameCount = 0;
+    std::function<void(float)> FPSUpdateCallback = nullptr;
+
+    void ShowFPS(bool show);
+    void ShowFPS(bool show, std::string method);
+
+    void CalculateFPS(float timeStep);
 
     void poll_events();
     void update();

@@ -7,13 +7,14 @@
 using namespace std;
 
 // Print the script string to the standard output stream
-void printfdsafdas(string &msg)
-{
-    Print(msg.c_str());
-}
+void printAS(bool b) { Print("%$", b); }
+void printAS(int num) { Print("%$", num); }
+void printAS(double num) { Print("%$", num); }
+void printAS(string& msg) { Print(msg.c_str()); }
 
 Engine::Engine() :
-    window(sf::VideoMode(800, 600), "ArkAngel"),
+    WindowTitle("ArkAngel"),
+    window(sf::VideoMode(800, 600), WindowTitle),
     ConsoleDesktop(),
     Console(Terminal::Create()),
     TotalTime(0)
@@ -25,7 +26,14 @@ Engine::Engine() :
     ScriptEngine = asCreateScriptEngine();
     int r = ScriptEngine->SetMessageCallback(asMETHOD(Engine, AsMessageCallback), this, asCALL_THISCALL); assert(r >= 0);
     RegisterStdString(ScriptEngine);
-    r = ScriptEngine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(printfdsafdas), asCALL_CDECL); assert(r >= 0);
+
+    r = ScriptEngine->RegisterGlobalFunction("void print(bool)", asFUNCTIONPR(printAS, (bool), void), asCALL_CDECL); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void print(int)", asFUNCTIONPR(printAS, (int), void), asCALL_CDECL); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void print(double)", asFUNCTIONPR(printAS, (double), void), asCALL_CDECL); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void print(string& in)", asFUNCTIONPR(printAS, (string&), void), asCALL_CDECL); assert(r >= 0);
+
+    r = ScriptEngine->RegisterGlobalFunction("void ShowFPS(bool)", asMETHODPR(Engine, ShowFPS, (bool), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void ShowFPS(bool, string)", asMETHODPR(Engine, ShowFPS, (bool, string), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
     ConsoleModule = ScriptEngine->GetModule("ConsoleModule", asGM_CREATE_IF_NOT_EXISTS);
     ConsoleContext = ScriptEngine->CreateContext();
@@ -45,6 +53,11 @@ Engine::Engine() :
             ExecuteString(ScriptEngine, command.c_str(), ConsoleModule, ConsoleContext);
     }));
 
+#ifdef NDEBUG
+    ShowFPS(false);
+#else
+    ShowFPS(true);
+#endif
 
     window.resetGLStates();
 }
@@ -87,6 +100,8 @@ void Engine::update()
 {
     float timeStep = EngineClock.restart().asSeconds();
     TotalTime += timeStep;
+
+    CalculateFPS(timeStep);
 
     if (SFGClock.getElapsedTime().asMicroseconds() >= 5000)
     {
@@ -147,3 +162,46 @@ void Engine::AsMessageCallback(const asSMessageInfo *msg) {
             break;
     }
 }
+
+void Engine::CalculateFPS(float timeStep)
+{
+    FPSTimeSinceUpdate += timeStep;
+    FPSFrameCount++;
+
+    if (FPSTimeSinceUpdate >= FPSUpdateTime)
+    {
+        FPS = FPSFrameCount / FPSUpdateTime;
+        FPSFrameCount = 0;
+        FPSTimeSinceUpdate = 0;
+
+        if (FPSUpdateCallback != nullptr)
+            FPSUpdateCallback(FPS);
+    }
+}
+
+void Engine::ShowFPS(bool show)
+{
+    ShowFPS(show, "titlebar");
+}
+
+void Engine::ShowFPS(bool show, string function)
+{
+    if (show)
+    {
+        if (function == "titlebar")
+        {
+            FPSUpdateCallback = [&](float fps) {
+                window.setTitle(PrintStr("%$;  FPS: %.f1$", WindowTitle, FPS));
+            };
+        }
+        else
+            PrintErr("'%$' is not an available function for ShowFPS", function);
+    }
+    else
+    {
+        window.setTitle(WindowTitle);
+        FPSUpdateCallback = nullptr;
+    }
+}
+
+
