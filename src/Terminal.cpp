@@ -57,6 +57,9 @@ Terminal::Ptr Terminal::Create(char style)
     sfg::Context::Get().GetEngine().SetProperty("Terminal", "CloseHeight", 10.f);
     sfg::Context::Get().GetEngine().SetProperty("Terminal", "CloseThickness", 3.f);
 
+    terminal->CommandBufferMaxSize = 10;
+    terminal->CommandBufferIndex = -1;
+
     terminal->RequestResize();
     return terminal;
 }
@@ -77,6 +80,18 @@ void Terminal::HandleEvent(const sf::Event& event)
                 case sf::Keyboard::Key::Return:
                     EnterCommand();
                     break;
+                case sf::Keyboard::Key::Up:
+                    AddToCommandBufferIndex(1);
+                    break;
+                case sf::Keyboard::Key::Down:
+                    AddToCommandBufferIndex(-1);
+                    break;
+                case sf::Keyboard::Key::PageUp:
+                    AddToCommandBufferIndex(CommandBufferMaxSize);
+                    break;
+                case sf::Keyboard::Key::PageDown:
+                    AddToCommandBufferIndex(-CommandBufferMaxSize);
+                    break;
             }
             break;
     }
@@ -90,16 +105,20 @@ void Terminal::EnterCommand()
     if (text.length() > 0) {
         Print("> " + text);
 
-        LastCommand = text;
+        CommandBuffer.push_front(text);
+        if (CommandBuffer.size() > CommandBufferMaxSize)
+            CommandBuffer.pop_back();
+
         GetSignals().Emit(OnCommandEntered);
     }
+    CommandBufferIndex = -1;
     Entry->SetText("");
     Entry->GrabFocus();
 }
 
 std::string& Terminal::GetLastCommand()
 {
-    return LastCommand;
+    return CommandBuffer.front();
 }
 
 void Terminal::PrintClass(std::string Str, std::string Class)
@@ -129,5 +148,23 @@ void Terminal::PrintWarning(std::string Str)
 {
     PrintClass(Str, "Warning");
 }
+
+void Terminal::AddToCommandBufferIndex(int val)
+{
+    CommandBufferIndex += val;
+    if (CommandBufferIndex < -1)
+        CommandBufferIndex = -1;
+    else if (CommandBufferIndex >= (int)CommandBuffer.size())
+        CommandBufferIndex = CommandBuffer.size() - 1;
+
+    if (CommandBufferIndex == -1)
+        Entry->SetText("");
+    else
+        Entry->SetText(CommandBuffer.at(CommandBufferIndex));
+
+    Entry->SetCursorPosition(Entry->GetText().getSize());
+}
+
+
 
 

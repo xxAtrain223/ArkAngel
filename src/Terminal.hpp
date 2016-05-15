@@ -5,6 +5,8 @@
 #ifndef ARKANGEL_TERMINAL_HPP
 #define ARKANGEL_TERMINAL_HPP
 
+#include <deque>
+
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Widgets.hpp>
 #include <SFML/System/Clock.hpp>
@@ -37,7 +39,10 @@ protected:
     sfg::Box::Ptr LogBox;
     sfg::Entry::Ptr Entry;
 
-    std::string LastCommand = "";
+    std::deque<std::string> CommandBuffer;
+    std::size_t CommandBufferMaxSize;
+    int CommandBufferIndex;
+    void AddToCommandBufferIndex(int val);
 
     Terminal(char style);
 
