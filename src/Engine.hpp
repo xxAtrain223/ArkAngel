@@ -19,6 +19,7 @@
 
 #include "Terminal.hpp"
 #include "Print.hpp"
+#include "GameStateManager.hpp"
 
 struct MousePosition
 {
@@ -31,11 +32,7 @@ class Engine
 {
 private:
     std::string WindowTitle;
-
     sfg::SFGUI Sfgui;
-    sfg::Desktop ConsoleDesktop;
-    sf::Clock SFGClock;
-    Terminal::Ptr Console;
 
     sf::Clock EngineClock;
     float TotalTime;
@@ -45,6 +42,9 @@ private:
     float FPS = 0;
     float FPSFrameCount = 0;
     std::function<void(float)> FPSUpdateCallback = nullptr;
+
+    asIScriptModule* ConsoleModule;
+    asIScriptContext* ConsoleContext;
 
     void ShowFPS(bool show);
     void ShowFPS(bool show, std::string method);
@@ -67,25 +67,21 @@ private:
     void PrintOutputBuffers();
     void ResetOutputBuffers();
 
-    asIScriptEngine* ScriptEngine;
-    asIScriptModule* ConsoleModule;
-    asIScriptContext* ConsoleContext;
-
     void AsMessageCallback(const asSMessageInfo* msg);
 
     struct KeyState
     {
-        int last_pressed = -1;
-        int last_released = -1;
+        int lastPressed = -1;
+        int lastReleased = -1;
     };
 
     struct MouseButtonState
     {
-        int last_pressed = -1;
-        int last_released = -1;
+        int lastPressed = -1;
+        int lastReleased = -1;
     };
 
-    int current_tick = 0;
+    int currentTick = 0;
     std::vector<KeyState> keyboard = std::vector<KeyState>(sf::Keyboard::KeyCount);
     std::vector<MouseButtonState> mouseButtons = std::vector<MouseButtonState>(sf::Mouse::ButtonCount);
     MousePosition mousePosition;
@@ -94,10 +90,19 @@ private:
     std::unordered_map<std::string, sf::Mouse::Button> sfButtonMap;
 
 public:
-    sf::RenderWindow window;
+    sf::RenderWindow Window;
+
+    asIScriptEngine* ScriptEngine;
+
+    GameStateManager Gsm;
+
+    sfg::Desktop ConsoleDesktop;
+    Terminal::Ptr Console;
 
     Engine();
     void go();
+
+    std::string GetWindowTitle() { return WindowTitle; }
 
     bool isKeyDown(sf::Keyboard::Key key);
     bool isKeyUp(sf::Keyboard::Key key);
@@ -119,9 +124,7 @@ public:
     bool wasMouseButtonPressed(const std::string& button);
     bool wasMouseButtonReleased(const std::string& button);
 
-    const MousePosition getMousePosition() const {
-        return mousePosition;
-    }
+    const MousePosition getMousePosition() const;
 };
 
 #endif //ARKANGEL_ENGINE_HPP

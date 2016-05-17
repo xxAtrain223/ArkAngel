@@ -1,4 +1,5 @@
 #include "Engine.hpp"
+#include "MainMenu.hpp"
 
 #include <string>
 #include <iostream>
@@ -13,17 +14,17 @@ void printAS(double num) { Print("%$\n", num); }
 void printAS(string& msg) { Print("%$\n", msg); }
 
 Engine::Engine() :
-    WindowTitle("ArkAngel"),
-    window(sf::VideoMode(800, 600), WindowTitle),
+    WindowTitle(string("ArkAngel")),
+    Window(sf::VideoMode(800, 600), WindowTitle),
     ConsoleDesktop(),
     Console(Terminal::Create()),
-    TotalTime(0)
+    TotalTime(0),
+    Gsm(this)
 {
-    Console->SetTitle("Console");
-    ConsoleDesktop.Add(Console);
-    ConsoleDesktop.LoadThemeFromFile("data/sfgui.theme");
-
     ScriptEngine = asCreateScriptEngine();
+    ConsoleModule = ScriptEngine->GetModule("ConsoleModule", asGM_CREATE_IF_NOT_EXISTS);
+    ConsoleContext = ScriptEngine->CreateContext();
+
     int r = ScriptEngine->SetMessageCallback(asMETHOD(Engine, AsMessageCallback), this, asCALL_THISCALL); assert(r >= 0);
     RegisterStdString(ScriptEngine);
 
@@ -51,8 +52,15 @@ Engine::Engine() :
     r = ScriptEngine->RegisterObjectProperty("MousePosition", "int wheel", asOFFSET(MousePosition, wheel)); assert(r >= 0);
     r = ScriptEngine->RegisterGlobalFunction("MousePosition getMousePosition()", asMETHOD(Engine, getMousePosition), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
-    ConsoleModule = ScriptEngine->GetModule("ConsoleModule", asGM_CREATE_IF_NOT_EXISTS);
-    ConsoleContext = ScriptEngine->CreateContext();
+#ifdef NDEBUG
+    ShowFPS(false);
+#else
+    ShowFPS(true);
+#endif
+
+    Console->SetTitle("Console");
+    ConsoleDesktop.Add(Console);
+    ConsoleDesktop.LoadThemeFromFile("data/sfgui.theme");
 
     Console->GetSignal(Console->OnCommandEntered).Connect(std::bind([&]{
         string command = Console->GetLastCommand();
@@ -69,11 +77,7 @@ Engine::Engine() :
             ExecuteString(ScriptEngine, command.c_str(), ConsoleModule, ConsoleContext);
     }));
 
-#ifdef NDEBUG
-    ShowFPS(false);
-#else
-    ShowFPS(true);
-#endif
+    Console->Show(false);
 
     sfKeyMap["A"] = sf::Keyboard::Key::A;
     sfKeyMap["B"] = sf::Keyboard::Key::B;
@@ -183,21 +187,26 @@ Engine::Engine() :
     sfButtonMap["XButton1"] = sf::Mouse::Button::XButton1;
     sfButtonMap["XButton2"] = sf::Mouse::Button::XButton2;
 
-    window.resetGLStates();
+    Window.resetGLStates();
 }
 
 void Engine::go()
 {
+    Gsm.push(MainMenu(this));
+
     EngineClock.restart();
-    SFGClock.restart();
-    while (window.isOpen())
+
+    while (Window.isOpen() && !Gsm.empty())
     {
-        ++current_tick;
+        ++currentTick;
         PrepareOutputBuffers();
 
         poll_events();
-        update();
-        draw();
+        int c = Gsm.size();
+        if (c > 0)
+            update();
+        if (Gsm.size() == c)
+            draw();
 
         PrintOutputBuffers();
         ResetOutputBuffers();
@@ -208,26 +217,24 @@ void Engine::poll_events()
 {
     sf::Event event;
 
-    while(window.pollEvent(event))
+    while(Window.pollEvent(event))
     {
-        ConsoleDesktop.HandleEvent(event);
-
         switch(event.type)
         {
             case sf::Event::Closed:
-                window.close();
+                Window.close();
                 break;
             case sf::Event::KeyPressed:
-                keyboard[event.key.code].last_pressed = current_tick;
+                keyboard[event.key.code].lastPressed = currentTick;
                 break;
             case sf::Event::KeyReleased:
-                keyboard[event.key.code].last_released = current_tick;
+                keyboard[event.key.code].lastReleased = currentTick;
                 break;
             case sf::Event::MouseButtonPressed:
-                mouseButtons[event.mouseButton.button].last_pressed = current_tick;
+                mouseButtons[event.mouseButton.button].lastPressed = currentTick;
                 break;
             case sf::Event::MouseButtonReleased:
-                mouseButtons[event.mouseButton.button].last_released = current_tick;
+                mouseButtons[event.mouseButton.button].lastReleased = currentTick;
                 break;
             case sf::Event::MouseWheelMoved:
                 mousePosition.wheel += event.mouseWheel.delta;
@@ -237,6 +244,8 @@ void Engine::poll_events()
                 mousePosition.y = event.mouseMove.y;
                 break;
         }
+
+        Gsm.handleEvent(event);
     }
 }
 
@@ -247,18 +256,15 @@ void Engine::update()
 
     CalculateFPS(timeStep);
 
-    if (SFGClock.getElapsedTime().asMicroseconds() >= 5000)
-    {
-        ConsoleDesktop.Update(static_cast<float>( SFGClock.getElapsedTime().asMicroseconds() ) / 1000000.f);
-        SFGClock.restart();
-    }
+    Gsm.update();
 }
 
 void Engine::draw()
 {
-    window.clear();
-    Sfgui.Display(window);
-    window.display();
+    Window.clear();
+    Gsm.draw();
+    Sfgui.Display(Window);
+    Window.display();
 }
 
 void Engine::PrepareOutputBuffers() {
@@ -335,7 +341,7 @@ void Engine::ShowFPS(bool show, string function)
         if (function == "titlebar")
         {
             FPSUpdateCallback = [&](float fps) {
-                window.setTitle(PrintStr("%$;  FPS: %.f1$", WindowTitle, FPS));
+                Window.setTitle(PrintStr("%$;  FPS: %.f1$", WindowTitle, FPS));
             };
         }
         else
@@ -343,14 +349,14 @@ void Engine::ShowFPS(bool show, string function)
     }
     else
     {
-        window.setTitle(WindowTitle);
+        Window.setTitle(WindowTitle);
         FPSUpdateCallback = nullptr;
     }
 }
 
 bool Engine::isKeyDown(sf::Keyboard::Key key)
 {
-    return keyboard[key].last_pressed > keyboard[key].last_released;
+    return keyboard[key].lastPressed > keyboard[key].lastReleased;
 }
 
 bool Engine::isKeyUp(sf::Keyboard::Key key)
@@ -360,12 +366,12 @@ bool Engine::isKeyUp(sf::Keyboard::Key key)
 
 bool Engine::wasKeyPressed(sf::Keyboard::Key key)
 {
-    return keyboard[key].last_pressed == current_tick;
+    return keyboard[key].lastPressed == currentTick;
 }
 
 bool Engine::wasKeyReleased(sf::Keyboard::Key key)
 {
-    return keyboard[key].last_released == current_tick;
+    return keyboard[key].lastReleased == currentTick;
 }
 
 bool Engine::isKeyDown(const std::string& key)
@@ -390,7 +396,7 @@ bool Engine::wasKeyReleased(const std::string& key)
 
 bool Engine::isMouseButtonDown(sf::Mouse::Button button)
 {
-    return mouseButtons[button].last_pressed > mouseButtons[button].last_released;
+    return mouseButtons[button].lastPressed > mouseButtons[button].lastReleased;
 }
 
 bool Engine::isMouseButtonUp(sf::Mouse::Button button)
@@ -400,12 +406,12 @@ bool Engine::isMouseButtonUp(sf::Mouse::Button button)
 
 bool Engine::wasMouseButtonPressed(sf::Mouse::Button button)
 {
-    return mouseButtons[button].last_pressed == current_tick;
+    return mouseButtons[button].lastPressed == currentTick;
 }
 
 bool Engine::wasMouseButtonReleased(sf::Mouse::Button button)
 {
-    return mouseButtons[button].last_released == current_tick;
+    return mouseButtons[button].lastReleased == currentTick;
 }
 
 bool Engine::isMouseButtonDown(const std::string& button)
@@ -426,4 +432,8 @@ bool Engine::wasMouseButtonPressed(const std::string& button)
 bool Engine::wasMouseButtonReleased(const std::string& button)
 {
     return wasMouseButtonReleased(sfButtonMap.at(button));
+}
+
+const MousePosition Engine::getMousePosition() const {
+    return mousePosition;
 }
