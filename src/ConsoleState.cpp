@@ -6,17 +6,14 @@
 
 using namespace std;
 
-ConsoleState::ConsoleState(Engine *engine) :
-    engine(engine)
+void ConsoleState::onPush()
 {
     engine->Console->Show(true);
-    cout << "Constructor" << endl;
 }
 
-ConsoleState::~ConsoleState()
+void ConsoleState::onPop()
 {
-    //engine->Console->Show(false);
-    cout << "Deconstructor" << endl;
+    engine->Console->Show(false);
 }
 
 void ConsoleState::handleEvent(sf::Event event)
@@ -35,6 +32,3 @@ void ConsoleState::update()
     if (engine->wasKeyPressed(sf::Keyboard::Key::Escape))
         engine->Gsm.pop();
 }
-
-void ConsoleState::draw()
-{  }

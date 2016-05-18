@@ -16,19 +16,16 @@ class ConsoleState {
 
 public:
     ConsoleState() = default;
-    ConsoleState(Engine *engine);
-    ConsoleState(const ConsoleState&) = default;               // Copy constructor
-    ConsoleState(ConsoleState&& other) = default;              // Move constructor
-    ConsoleState& operator=(const ConsoleState&) & = default;  // Copy assignment operator
-    ConsoleState& operator=(ConsoleState&&) & = default;       // Move assignment operator
-    ~ConsoleState();
+    ConsoleState(Engine *engine) : engine(engine) {}
 
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
     bool haltsDraw() { return false; }
+    void onPush();
+    void onPop();
     void handleEvent(sf::Event event);
     void update();
-    void draw();
+    void draw() {}
 };
 
 
