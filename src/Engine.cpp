@@ -1,5 +1,6 @@
 #include "Engine.hpp"
 #include "MainMenu.hpp"
+#include "ConsoleState.hpp"
 
 #include <string>
 #include <iostream>
@@ -61,6 +62,8 @@ Engine::Engine() :
     Console->SetTitle("Console");
     ConsoleDesktop.Add(Console);
     ConsoleDesktop.LoadThemeFromFile("data/sfgui.theme");
+
+    Console->GetSignal(Terminal::OnCloseButton).Connect(std::bind([&]{ Gsm.pop(); }));
 
     Console->GetSignal(Console->OnCommandEntered).Connect(std::bind([&]{
         string command = Console->GetLastCommand();
@@ -255,6 +258,11 @@ void Engine::update()
     TotalTime += timeStep;
 
     CalculateFPS(timeStep);
+
+    if (wasKeyPressed(sf::Keyboard::Key::Tilde) && !Console->IsLocallyVisible()) {
+        Gsm.push(ConsoleState(this));
+        return;
+    }
 
     Gsm.update();
 }

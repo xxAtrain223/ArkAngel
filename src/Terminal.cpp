@@ -19,7 +19,7 @@ Terminal::Ptr Terminal::Create(char style)
     Terminal::Ptr terminal( new Terminal( style ) );
 
     terminal->SetTitle("Terminal");
-    terminal->GetSignal(sfg::Window::OnCloseButton).Connect(std::bind([&]{ terminal->Show(false); }));
+    terminal->GetSignal(Terminal::OnCloseButton).Connect(std::bind([&]{ terminal->Show(false); }));
 
     terminal->LogBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
 
@@ -59,6 +59,8 @@ Terminal::Ptr Terminal::Create(char style)
 
     terminal->CommandBufferMaxSize = 10;
     terminal->CommandBufferIndex = -1;
+
+    terminal->Entry->GrabFocus();
 
     terminal->RequestResize();
     return terminal;
@@ -165,6 +167,12 @@ void Terminal::AddToCommandBufferIndex(int val)
     Entry->SetCursorPosition(Entry->GetText().getSize());
 }
 
+std::string Terminal::GetEntryText()
+{
+    return Entry->GetText();
+}
 
-
-
+void Terminal::SetEntryText(std::string str)
+{
+    Entry->SetText(str);
+}

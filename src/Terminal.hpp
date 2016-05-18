@@ -34,6 +34,9 @@ public:
 
     static sfg::Signal::SignalID OnCommandEntered;
 
+    std::string GetEntryText();
+    void SetEntryText(std::string);
+
 protected:
     sfg::ScrolledWindow::Ptr ScrollWindow;
     sfg::Box::Ptr LogBox;
