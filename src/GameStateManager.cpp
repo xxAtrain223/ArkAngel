@@ -17,8 +17,9 @@ namespace _detail_GameStateManager {
 
     void GameStateManager::pop()
     {
-        states.back().onPop();
+        auto state = std::move(states.back());
         states.pop_back();
+        state.onPop();
     }
 
     bool GameStateManager::empty()
@@ -49,11 +50,10 @@ namespace _detail_GameStateManager {
         for (auto& state : reverse(states))
         {
             bool halts = state.haltsUpdate();
+            auto c = states.size();
             state.update();
-            if (halts)
-            {
-                return;
-            }
+            if (c != states.size()) return;
+            if (halts) return;
         }
     }
 
@@ -65,10 +65,7 @@ namespace _detail_GameStateManager {
             {
                 auto iter = next(riter).base();
                 auto halts = iter->haltsDraw();
-                if (halts)
-                {
-                    return iter;
-                }
+                if (halts) return iter;
             }
             return begin(states);
         };

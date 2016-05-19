@@ -14,6 +14,7 @@ void ConsoleState::onPush()
 void ConsoleState::onPop()
 {
     engine->Console->Show(false);
+    engine->Gsm.pop();
 }
 
 void ConsoleState::handleEvent(sf::Event event)

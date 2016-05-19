@@ -1,6 +1,7 @@
 #include "Engine.hpp"
 #include "MainMenu.hpp"
 #include "ConsoleState.hpp"
+#include "PauseState.hpp"
 
 #include <string>
 #include <iostream>
@@ -24,7 +25,7 @@ Engine::Engine() :
 {
     ScriptEngine = asCreateScriptEngine();
     ConsoleModule = ScriptEngine->GetModule("ConsoleModule", asGM_CREATE_IF_NOT_EXISTS);
-    ConsoleContext = ScriptEngine->CreateContext();
+    //ConsoleContext = ScriptEngine->CreateContext();
 
     int r = ScriptEngine->SetMessageCallback(asMETHOD(Engine, AsMessageCallback), this, asCALL_THISCALL); assert(r >= 0);
     RegisterStdString(ScriptEngine);
@@ -77,7 +78,7 @@ Engine::Engine() :
             ConsoleModule->CompileGlobalVar("addvar", var.c_str(), 0);
         }
         else
-            ExecuteString(ScriptEngine, command.c_str(), ConsoleModule, ConsoleContext);
+            ExecuteString(ScriptEngine, command.c_str(), ConsoleModule);
     }));
 
     Console->Show(false);
@@ -189,8 +190,6 @@ Engine::Engine() :
     sfButtonMap["Middle"] = sf::Mouse::Button::Middle;
     sfButtonMap["XButton1"] = sf::Mouse::Button::XButton1;
     sfButtonMap["XButton2"] = sf::Mouse::Button::XButton2;
-
-    Window.resetGLStates();
 }
 
 void Engine::go()
@@ -260,6 +259,7 @@ void Engine::update()
     CalculateFPS(timeStep);
 
     if (wasKeyPressed(sf::Keyboard::Key::Tilde) && !Console->IsLocallyVisible()) {
+        Gsm.push(PauseState(this));
         Gsm.push(ConsoleState(this));
         return;
     }

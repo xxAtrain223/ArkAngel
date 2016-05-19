@@ -19,7 +19,7 @@ public:
     ConsoleState(Engine *engine) : engine(engine) {}
 
     bool haltsHandleEvent() { return true; }
-    bool haltsUpdate() { return true; }
+    bool haltsUpdate() { return false; }
     bool haltsDraw() { return false; }
     void onPush();
     void onPop();

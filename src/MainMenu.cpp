@@ -22,40 +22,45 @@ MainMenu::MainMenu(Engine *engine) : engine(engine) {
 }
 
 void MainMenu::update() {
-    if (engine->wasKeyPressed(sf::Keyboard::Escape) || engine->wasKeyPressed(sf::Keyboard::BackSpace)) {
+    if (engine->wasKeyPressed(sf::Keyboard::Escape))
+    {
         engine->Gsm.pop();
         return;
     }
 
-    if (engine->wasKeyPressed(sf::Keyboard::Up) || engine->wasKeyPressed(sf::Keyboard::W))
-        selected = (selected + int(items.size()) - 1) % int(items.size());
+    if (!items.empty()) {
+        if (engine->wasKeyPressed(sf::Keyboard::Up) || engine->wasKeyPressed(sf::Keyboard::W))
+            selected = (selected + int(items.size()) - 1) % int(items.size());
 
-    if (engine->wasKeyPressed(sf::Keyboard::Down) || engine->wasKeyPressed(sf::Keyboard::S))
-        selected = (selected + int(items.size()) + 1) % int(items.size());
+        if (engine->wasKeyPressed(sf::Keyboard::Down) || engine->wasKeyPressed(sf::Keyboard::S))
+            selected = (selected + int(items.size()) + 1) % int(items.size());
 
-    if (engine->wasKeyPressed(sf::Keyboard::Return) || engine->wasKeyPressed(sf::Keyboard::Space)) {
-        engine->Gsm.push(items[selected].second());
-        return;
-    }
-
-    if (engine->wasMouseButtonPressed(sf::Mouse::Left))
-    {
-        sf::Text text;
-        text.setFont(optionFont);
-        text.setCharacterSize(40);
-
-        for (int i = 0; i < items.size(); i++)
+        if (engine->wasKeyPressed(sf::Keyboard::Return) || engine->wasKeyPressed(sf::Keyboard::Space))
         {
-            text.setString(items[i].first);
-            text.setOrigin(text.getLocalBounds().width/2.f, 0);
-            text.setPosition(engine->Window.getSize().x / 2.f, 100 + text.getFont()->getLineSpacing(text.getCharacterSize()) * (i + 1));
-            sf::FloatRect boundingBox;
-            boundingBox = text.getGlobalBounds();
-            if (boundingBox.contains(engine->getMousePosition().x, engine->getMousePosition().y))
+            engine->Gsm.push(items[selected].second());
+            return;
+        }
+
+        if (engine->wasMouseButtonPressed(sf::Mouse::Left))
+        {
+            sf::Text text;
+            text.setFont(optionFont);
+            text.setCharacterSize(40);
+
+            for (int i = 0; i < items.size(); i++)
             {
-                selected = i;
-                engine->Gsm.push(items[selected].second());
-                return;
+                text.setString(items[i].first);
+                text.setOrigin(text.getLocalBounds().width / 2.f, 0);
+                text.setPosition(engine->Window.getSize().x / 2.f,
+                                 100 + text.getFont()->getLineSpacing(text.getCharacterSize()) * (i + 1));
+                sf::FloatRect boundingBox;
+                boundingBox = text.getGlobalBounds();
+                if (boundingBox.contains(engine->getMousePosition().x, engine->getMousePosition().y))
+                {
+                    selected = i;
+                    engine->Gsm.push(items[selected].second());
+                    return;
+                }
             }
         }
     }
