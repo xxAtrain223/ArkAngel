@@ -3,6 +3,7 @@
 //
 
 #include "MainMenu.hpp"
+#include "ScriptSandbox.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -19,6 +20,8 @@ std::function<StateErasure()> maker(Ts... ts) {
 MainMenu::MainMenu(Engine *engine) : engine(engine) {
     if (!optionFont.loadFromFile("data/fonts/OpenSans-Regular.ttf"))
         throw "Couldn't find 'data/fonts/OpenSans-Regular.ttf'";
+
+    items.emplace_back(make_pair("Physics Sandbox", maker<ScriptSandbox>(engine)));
 }
 
 void MainMenu::update() {

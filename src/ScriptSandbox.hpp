@@ -7,12 +7,12 @@
 
 #include "Engine.hpp"
 
-class ScriptPlayground {
+class ScriptSandbox {
     Engine* engine;
 
 public:
-    ScriptPlayground() = default;
-    ScriptPlayground(Engine *engine);
+    ScriptSandbox() = default;
+    ScriptSandbox(Engine *engine);
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
     bool haltsDraw() { return true; }
