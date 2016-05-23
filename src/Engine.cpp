@@ -227,10 +227,12 @@ void Engine::poll_events()
                 Window.close();
                 break;
             case sf::Event::KeyPressed:
-                keyboard[event.key.code].lastPressed = currentTick;
+                if (event.key.code != sf::Keyboard::Key::Unknown)
+                    keyboard[event.key.code].lastPressed = currentTick;
                 break;
             case sf::Event::KeyReleased:
-                keyboard[event.key.code].lastReleased = currentTick;
+                if (event.key.code != sf::Keyboard::Key::Unknown)
+                    keyboard[event.key.code].lastReleased = currentTick;
                 break;
             case sf::Event::MouseButtonPressed:
                 mouseButtons[event.mouseButton.button].lastPressed = currentTick;

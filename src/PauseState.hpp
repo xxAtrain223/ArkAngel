@@ -13,6 +13,7 @@ class PauseState {
     Engine* engine;
 
     sf::RectangleShape rect;
+    sf::Font font;
 
 public:
     PauseState() = default;
