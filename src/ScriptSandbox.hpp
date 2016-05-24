@@ -9,6 +9,11 @@
 
 class ScriptSandbox {
     Engine* engine;
+    asIScriptEngine* ScriptEngine;
+
+    sf::Clock Clock;
+
+    void executeFile(std::string);
 
 public:
     ScriptSandbox() = default;
@@ -18,7 +23,7 @@ public:
     bool haltsDraw() { return true; }
     void onPush() {}
     void onPop();
-    void handleEvent(sf::Event event) {}
+    void handleEvent(sf::Event event);
     void update();
     void draw();
 };
