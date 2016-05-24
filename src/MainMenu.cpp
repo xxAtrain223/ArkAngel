@@ -13,7 +13,7 @@ using namespace std;
 template <typename T, typename... Ts>
 std::function<StateErasure()> maker(Ts... ts) {
     return [=](){
-        return T(ts...);
+        return std::make_unique<T>(ts...);
     };
 }
 
@@ -21,7 +21,7 @@ MainMenu::MainMenu(Engine *engine) : engine(engine) {
     if (!optionFont.loadFromFile("data/fonts/OpenSans-Regular.ttf"))
         throw "Couldn't find 'data/fonts/OpenSans-Regular.ttf'";
 
-    items.emplace_back(make_pair("Physics Sandbox", maker<ScriptSandbox>(engine)));
+    items.emplace_back(make_pair("Script Sandbox", maker<ScriptSandbox>(engine)));
 }
 
 void MainMenu::update() {

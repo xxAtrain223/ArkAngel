@@ -6,12 +6,13 @@
 
 using namespace std;
 
-void ConsoleState::onPush()
+ConsoleState::ConsoleState(Engine *engine) :
+        engine(engine)
 {
     engine->Console->Show(true);
 }
 
-void ConsoleState::onPop()
+ConsoleState::~ConsoleState()
 {
     engine->Console->Show(false);
     engine->Gsm.pop();

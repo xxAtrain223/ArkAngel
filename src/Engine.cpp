@@ -261,8 +261,8 @@ void Engine::update()
     CalculateFPS(timeStep);
 
     if (wasKeyPressed(sf::Keyboard::Key::Tilde) && !Console->IsLocallyVisible()) {
-        Gsm.push(PauseState(this));
-        Gsm.push(ConsoleState(this));
+        Gsm.push(std::make_unique<PauseState>(this));
+        Gsm.push(std::make_unique<ConsoleState>(this));
         return;
     }
 

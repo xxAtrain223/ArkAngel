@@ -26,8 +26,6 @@ public:
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
     bool haltsDraw() { return true; }
-    void onPush() {}
-    void onPop() {}
     void handleEvent(sf::Event event) {}
     void update();
     void draw();

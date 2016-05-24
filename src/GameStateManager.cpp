@@ -12,14 +12,11 @@ namespace _detail_GameStateManager {
     void GameStateManager::push(StateErasure state)
     {
         states.emplace_back(std::move(state));
-        states.back().onPush();
     }
 
     void GameStateManager::pop()
     {
-        auto state = std::move(states.back());
         states.pop_back();
-        state.onPop();
     }
 
     bool GameStateManager::empty()

@@ -11,21 +11,21 @@ ScriptSandbox::ScriptSandbox(Engine *engine) :
     engine(engine)
 {
     int r;
-    //engine->ScriptEngine->BeginConfigGroup("ScriptSandbox");
-    //r = engine->ScriptEngine->RegisterGlobalFunction("void executeFile(string)", asMETHOD(ScriptSandbox, executeFile), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
-    r = engine->ScriptEngine->RegisterGlobalFunction("void executeFile(string)", asMETHODPR(ScriptSandbox, executeFile, (string), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
-    //engine->ScriptEngine->EndConfigGroup();
+
+    engine->ScriptEngine->BeginConfigGroup("ScriptSandbox");
+    r = engine->ScriptEngine->RegisterGlobalFunction("void executeFile(string)", asMETHOD(ScriptSandbox, executeFile), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+    engine->ScriptEngine->EndConfigGroup();
 
     ScriptEngine = engine->ScriptEngine;
 
     engine->Console->Show(true);
 }
 
-void ScriptSandbox::onPop()
+ScriptSandbox::~ScriptSandbox()
 {
     engine->Console->Show(false);
 
-    //engine->ScriptEngine->RemoveConfigGroup("ScriptSandbox");
+    engine->ScriptEngine->RemoveConfigGroup("ScriptSandbox");
 }
 
 void ScriptSandbox::handleEvent(sf::Event event)

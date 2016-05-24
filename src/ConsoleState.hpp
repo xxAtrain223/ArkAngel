@@ -16,13 +16,11 @@ class ConsoleState {
 
 public:
     ConsoleState() = default;
-    ConsoleState(Engine *engine) : engine(engine) {}
-
+    ConsoleState(Engine *engine);
+    ~ConsoleState();
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return false; }
     bool haltsDraw() { return false; }
-    void onPush();
-    void onPop();
     void handleEvent(sf::Event event);
     void update();
     void draw() {}

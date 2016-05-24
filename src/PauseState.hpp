@@ -18,11 +18,10 @@ class PauseState {
 public:
     PauseState() = default;
     PauseState(Engine *engine);
+    ~PauseState() = default;
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
     bool haltsDraw() { return false; }
-    void onPush() {}
-    void onPop() {}
     void handleEvent(sf::Event event) {}
     void update();
     void draw();

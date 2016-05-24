@@ -22,8 +22,6 @@ namespace _detail_GameStateManager {
     RASPBERRY_DECL_METHOD(has_haltsHandleEvent, haltsHandleEvent);
     RASPBERRY_DECL_METHOD(has_haltsUpdate, haltsUpdate);
     RASPBERRY_DECL_METHOD(has_haltsDraw, haltsDraw);
-    RASPBERRY_DECL_METHOD(has_onPush, onPush);
-    RASPBERRY_DECL_METHOD(has_onPop, onPop);
     RASPBERRY_DECL_METHOD(has_handleEvent, handleEvent);
     RASPBERRY_DECL_METHOD(has_update, update);
     RASPBERRY_DECL_METHOD(has_draw, draw);
@@ -34,8 +32,6 @@ namespace _detail_GameStateManager {
             has_haltsHandleEvent<bool()>,
             has_haltsUpdate<bool()>,
             has_haltsDraw<bool()>,
-            has_onPush<void()>,
-            has_onPop<void()>,
             has_handleEvent<void(sf::Event)>,
             has_update<void()>,
             has_draw<void()>
