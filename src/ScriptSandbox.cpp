@@ -56,11 +56,12 @@ void ScriptSandbox::draw()
 void ScriptSandbox::executeFile(string filename)
 {
     ifstream ifs(filename);
+    if (!ifs.good())
+    {
+        PrintErr("\"%$\" doesn't exist\n", filename);
+        return;
+    }
+
     string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
-    if (engine->ScriptEngine == nullptr)
-        PrintErr("engine->ScriptEngine is null\n");
-    else if (ScriptEngine == nullptr)
-        PrintErr("ScriptEngine is null\n");
-    else
-        ExecuteString(engine->ScriptEngine, str.c_str());
+    ExecuteString(engine->ScriptEngine, str.c_str());
 }
