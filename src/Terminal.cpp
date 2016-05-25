@@ -129,6 +129,9 @@ void Terminal::PrintClass(std::string Str, std::string Class)
     label->SetAlignment(sf::Vector2f(0.f, 0.f));
     label->SetClass(Class);
     LogBox->PackEnd(label);
+
+    auto adj = ScrollWindow->GetVerticalAdjustment();
+    adj->SetValue(adj->GetUpper());
 }
 
 void Terminal::Print(std::string Str)

@@ -224,7 +224,8 @@ void Engine::poll_events()
         switch(event.type)
         {
             case sf::Event::Closed:
-                Window.close();
+                while (!Gsm.empty())
+                    Gsm.pop();
                 break;
             case sf::Event::KeyPressed:
                 if (event.key.code != sf::Keyboard::Key::Unknown)
