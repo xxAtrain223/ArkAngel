@@ -4,7 +4,7 @@ Terminal Label {
 }
 
 Label.Log {
-    Color: #C6CBC4BE;
+    Color: #C6CBC47F;
 }
 
 Label.Warning {

@@ -7,13 +7,24 @@
 
 #include "Engine.hpp"
 
+#include <scriptbuilder.h>
+
 class ScriptSandbox {
     Engine* engine;
-    asIScriptEngine* ScriptEngine;
+    CScriptBuilder builder;
 
     sf::Clock Clock;
 
-    void executeFile(std::string);
+    void executeScript(std::string filename);
+    void executeScript(std::string filename, std::string moduleName);
+
+    void startNewModule(std::string moduleName);
+    void addSection(std::string filename);
+    void buildModule();
+    void defineWord(std::string word);
+    void removeModule(std::string moduleName);
+
+    void addScriptAsModule(std::string filename);
 
 public:
     ScriptSandbox() = default;
