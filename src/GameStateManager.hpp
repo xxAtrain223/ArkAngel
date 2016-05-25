@@ -12,7 +12,9 @@
 
 #include <utility>
 #include <vector>
+#include <tuple>
 #include <memory>
+#include <atomic>
 
 // Reflection stuff
 class Engine;
@@ -51,7 +53,12 @@ namespace _detail_GameStateManager {
     {
         Engine* engine;
 
-        std::vector<StateErasure> states;
+        std::vector<std::tuple<StateErasure, std::string>> states;
+
+        inline std::uint32_t next_uid() {
+            static std::atomic<std::uint32_t> uid {0};
+            return ++uid;
+        }
 
     public:
         GameStateManager(Engine* engine) : engine(engine) {}
@@ -66,7 +73,7 @@ namespace _detail_GameStateManager {
          *
          * @param state Game state
          */
-        void push(StateErasure state);
+        void push(std::function<StateErasure()> state);
 
         /**
          * Pops a state off the stack
@@ -110,9 +117,17 @@ namespace _detail_GameStateManager {
         int size();
     };
 
+    template <typename T, typename... Ts>
+    std::function<StateErasure()> StateMaker(Ts... ts) {
+        return [=](){
+            return std::make_unique<T>(ts...);
+        };
+    }
+
 } // namespace _detail_GameStateManager
 
 using _detail_GameStateManager::GameStateManager;
 using _detail_GameStateManager::StateErasure;
+using _detail_GameStateManager::StateMaker;
 
 #endif //ARKANGEL_GAMESTATEMANAGER_HPP

@@ -10,18 +10,11 @@
 
 using namespace std;
 
-template <typename T, typename... Ts>
-std::function<StateErasure()> maker(Ts... ts) {
-    return [=](){
-        return std::make_unique<T>(ts...);
-    };
-}
-
 MainMenu::MainMenu(Engine *engine) : engine(engine) {
     if (!optionFont.loadFromFile("data/fonts/OpenSans-Regular.ttf"))
         throw "Couldn't find 'data/fonts/OpenSans-Regular.ttf'";
 
-    items.emplace_back(make_pair("Script Sandbox", maker<ScriptSandbox>(engine)));
+    items.emplace_back(make_pair("Script Sandbox", StateMaker<ScriptSandbox>(engine)));
 }
 
 void MainMenu::update() {
@@ -40,7 +33,7 @@ void MainMenu::update() {
 
         if (engine->wasKeyPressed(sf::Keyboard::Return) || engine->wasKeyPressed(sf::Keyboard::Space))
         {
-            engine->Gsm.push(items[selected].second());
+            engine->Gsm.push(items[selected].second);
             return;
         }
 
@@ -61,7 +54,7 @@ void MainMenu::update() {
                 if (boundingBox.contains(engine->getMousePosition().x, engine->getMousePosition().y))
                 {
                     selected = i;
-                    engine->Gsm.push(items[selected].second());
+                    engine->Gsm.push(items[selected].second);
                     return;
                 }
             }

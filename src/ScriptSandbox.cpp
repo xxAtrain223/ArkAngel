@@ -13,8 +13,6 @@ ScriptSandbox::ScriptSandbox(Engine *engine) :
     engine(engine)
 {
     int r;
-
-    engine->ScriptEngine->BeginConfigGroup("ScriptSandbox");
     r = engine->ScriptEngine->RegisterGlobalFunction("void executeScript(string)", asMETHODPR(ScriptSandbox, executeScript, (string), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void executeScript(string, string)", asMETHODPR(ScriptSandbox, executeScript, (string, string), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void startNewModule(string)", asMETHOD(ScriptSandbox, startNewModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
@@ -23,7 +21,6 @@ ScriptSandbox::ScriptSandbox(Engine *engine) :
     r = engine->ScriptEngine->RegisterGlobalFunction("void defineWord(string)", asMETHOD(ScriptSandbox, defineWord), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void removeModule(string)", asMETHOD(ScriptSandbox, removeModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void addScriptAsModule(string)", asMETHOD(ScriptSandbox, addScriptAsModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
-    engine->ScriptEngine->EndConfigGroup();
 
     engine->Console->Show(true);
 }
@@ -31,8 +28,6 @@ ScriptSandbox::ScriptSandbox(Engine *engine) :
 ScriptSandbox::~ScriptSandbox()
 {
     engine->Console->Show(false);
-
-    engine->ScriptEngine->RemoveConfigGroup("ScriptSandbox");
 }
 
 void ScriptSandbox::handleEvent(sf::Event event)

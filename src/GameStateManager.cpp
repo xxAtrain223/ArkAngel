@@ -9,13 +9,17 @@
 
 namespace _detail_GameStateManager {
 
-    void GameStateManager::push(StateErasure state)
+    void GameStateManager::push(std::function<StateErasure()> state)
     {
-        states.emplace_back(std::move(state));
+        std::string uid = PrintStr("%$", next_uid());
+        engine->ScriptEngine->BeginConfigGroup(uid.c_str());
+        states.emplace_back(std::make_tuple(state(), uid));
+        engine->ScriptEngine->EndConfigGroup();
     }
 
     void GameStateManager::pop()
     {
+        engine->ScriptEngine->RemoveConfigGroup(std::get<1>(states.back()).c_str());
         states.pop_back();
     }
 
@@ -33,8 +37,9 @@ namespace _detail_GameStateManager {
     {
         for (auto& state : reverse(states))
         {
-            bool halts = state.haltsHandleEvent();
-            state.handleEvent(event);
+            //bool halts = state.haltsHandleEvent();
+            bool halts = std::get<0>(state).haltsHandleEvent();
+            std::get<0>(state).handleEvent(event);
             if (halts)
             {
                 return;
@@ -46,9 +51,9 @@ namespace _detail_GameStateManager {
     {
         for (auto& state : reverse(states))
         {
-            bool halts = state.haltsUpdate();
+            bool halts = std::get<0>(state).haltsUpdate();
             auto c = states.size();
-            state.update();
+            std::get<0>(state).update();
             if (c != states.size()) return;
             if (halts) return;
         }
@@ -61,7 +66,7 @@ namespace _detail_GameStateManager {
             for (auto riter = std::rbegin(states), eriter = std::rend(states); riter != eriter; ++riter)
             {
                 auto iter = next(riter).base();
-                auto halts = iter->haltsDraw();
+                auto halts = std::get<0>(*iter).haltsDraw();
                 if (halts) return iter;
             }
             return begin(states);
@@ -70,7 +75,7 @@ namespace _detail_GameStateManager {
         auto start = findStart();
         for (auto& state : make_iterator_range(start, end(states)))
         {
-            state.draw();
+            std::get<0>(state).draw();
         }
     }
 

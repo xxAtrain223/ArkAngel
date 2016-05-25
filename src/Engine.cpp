@@ -194,7 +194,7 @@ Engine::Engine() :
 
 void Engine::go()
 {
-    Gsm.push(MainMenu(this));
+    Gsm.push(StateMaker<MainMenu>(this));
 
     EngineClock.restart();
 
@@ -262,8 +262,8 @@ void Engine::update()
     CalculateFPS(timeStep);
 
     if (wasKeyPressed(sf::Keyboard::Key::Tilde) && !Console->IsLocallyVisible()) {
-        Gsm.push(std::make_unique<PauseState>(this));
-        Gsm.push(std::make_unique<ConsoleState>(this));
+        Gsm.push(StateMaker<PauseState>(this));
+        Gsm.push(StateMaker<ConsoleState>(this));
         return;
     }
 
