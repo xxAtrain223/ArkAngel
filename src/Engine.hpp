@@ -44,7 +44,6 @@ private:
     std::function<void(float)> FPSUpdateCallback = nullptr;
 
     asIScriptModule* ConsoleModule;
-    asIScriptContext* ConsoleContext;
 
     void ShowFPS(bool show);
     void ShowFPS(bool show, std::string method);

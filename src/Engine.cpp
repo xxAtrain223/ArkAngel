@@ -25,7 +25,6 @@ Engine::Engine() :
 {
     ScriptEngine = asCreateScriptEngine();
     ConsoleModule = ScriptEngine->GetModule("ConsoleModule", asGM_CREATE_IF_NOT_EXISTS);
-    //ConsoleContext = ScriptEngine->CreateContext();
 
     int r = ScriptEngine->SetMessageCallback(asMETHOD(Engine, AsMessageCallback), this, asCALL_THISCALL); assert(r >= 0);
     RegisterStdString(ScriptEngine);

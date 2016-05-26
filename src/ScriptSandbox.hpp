@@ -24,7 +24,7 @@ class ScriptSandbox {
     void defineWord(std::string word);
     void removeModule(std::string moduleName);
 
-    void addScriptAsModule(std::string filename);
+    std::string addScriptAsModule(std::string filename);
 
 public:
     ScriptSandbox() = default;

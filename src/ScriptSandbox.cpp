@@ -20,7 +20,7 @@ ScriptSandbox::ScriptSandbox(Engine *engine) :
     r = engine->ScriptEngine->RegisterGlobalFunction("void buildModule()", asMETHOD(ScriptSandbox, buildModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void defineWord(string)", asMETHOD(ScriptSandbox, defineWord), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void removeModule(string)", asMETHOD(ScriptSandbox, removeModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
-    r = engine->ScriptEngine->RegisterGlobalFunction("void addScriptAsModule(string)", asMETHOD(ScriptSandbox, addScriptAsModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+    r = engine->ScriptEngine->RegisterGlobalFunction("string addScriptAsModule(string)", asMETHOD(ScriptSandbox, addScriptAsModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
     engine->Console->Show(true);
 }
@@ -106,19 +106,25 @@ void ScriptSandbox::removeModule(std::string moduleName)
     engine->ScriptEngine->DiscardModule(moduleName.c_str());
 }
 
-void ScriptSandbox::addScriptAsModule(std::string filename)
+string ScriptSandbox::addScriptAsModule(std::string filename)
 {
     regex rgx("^(?:(.*)[\\/\\\\])?(.*?)(?:\\.(.*))?$");
     smatch match;
 
-    if (std::regex_search(filename, match, rgx)) {
+    if (std::regex_search(filename, match, rgx))
+    {
         string name = match[2];
         PrintLog("Module Name \"%$\"\n", name);
 
         builder.StartNewModule(engine->ScriptEngine, name.c_str());
         builder.AddSectionFromFile(filename.c_str());
         builder.BuildModule();
+
+        return name;
     }
     else
+    {
         PrintErr("\"%$\" is an invalid filename.\n", filename);
+        return "";
+    }
 }
