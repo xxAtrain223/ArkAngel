@@ -3,6 +3,7 @@
 //
 
 #include "Terminal.hpp"
+#include "Util.hpp"
 
 #include <iostream>
 
@@ -94,6 +95,26 @@ void Terminal::HandleEvent(const sf::Event& event)
                 case sf::Keyboard::Key::PageDown:
                     AddToCommandBufferIndex(-CommandBufferMaxSize);
                     break;
+            }
+            break;
+        case sf::Event::MouseWheelScrolled:
+            if (IsMouseInWidget())
+            {
+                float d = event.mouseWheelScroll.delta;
+                sfg::Adjustment::Ptr adj;
+
+                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+                    adj = ScrollWindow->GetVerticalAdjustment();
+                else if (event.mouseWheelScroll.wheel == sf::Mouse::HorizontalWheel)
+                    adj = ScrollWindow->GetHorizontalAdjustment();
+
+                for (int i = 0; i < abs(d) * 14; i++)
+                {
+                    if (d < 0)
+                        adj->Increment();
+                    else
+                        adj->Decrement();
+                }
             }
             break;
     }
