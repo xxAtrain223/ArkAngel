@@ -65,7 +65,7 @@ void ScriptSandbox::executeScript(string filename)
     }
 
     string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
-    ExecuteString(engine->ScriptEngine, str.c_str());
+    ExecuteString(engine->ScriptEngine, str.c_str(), engine->ConsoleModule);
 }
 
 void ScriptSandbox::executeScript(std::string filename, std::string moduleName)

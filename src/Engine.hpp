@@ -43,10 +43,12 @@ private:
     float FPSFrameCount = 0;
     std::function<void(float)> FPSUpdateCallback = nullptr;
 
-    asIScriptModule* ConsoleModule;
+    void showFPS(bool show);
+    void showFPS(bool show, std::string method);
 
-    void ShowFPS(bool show);
-    void ShowFPS(bool show, std::string method);
+    void printModules();
+
+    void setConsoleModule(std::string moduleName);
 
     void CalculateFPS(float timeStep);
 
@@ -92,6 +94,7 @@ public:
     sf::RenderWindow Window;
 
     asIScriptEngine* ScriptEngine;
+    asIScriptModule* ConsoleModule;
 
     GameStateManager Gsm;
 

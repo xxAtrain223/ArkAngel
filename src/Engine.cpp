@@ -34,8 +34,10 @@ Engine::Engine() :
     r = ScriptEngine->RegisterGlobalFunction("void print(double)", asFUNCTIONPR(printAS, (double), void), asCALL_CDECL); assert(r >= 0);
     r = ScriptEngine->RegisterGlobalFunction("bool print(string)", asFUNCTIONPR(printAS, (string&), void), asCALL_CDECL); assert(r >= 0);
 
-    r = ScriptEngine->RegisterGlobalFunction("void ShowFPS(bool)", asMETHODPR(Engine, ShowFPS, (bool), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
-    r = ScriptEngine->RegisterGlobalFunction("void ShowFPS(bool, string)", asMETHODPR(Engine, ShowFPS, (bool, string), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void showFPS(bool)", asMETHODPR(Engine, showFPS, (bool), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void showFPS(bool, string)", asMETHODPR(Engine, showFPS, (bool, string), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void printModules()", asMETHOD(Engine, printModules), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
+    r = ScriptEngine->RegisterGlobalFunction("void setConsoleModule(string)", asMETHOD(Engine, setConsoleModule), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
     r = ScriptEngine->RegisterGlobalFunction("bool isKeyDown(string)", asMETHODPR(Engine, isKeyDown, (const string&), bool), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = ScriptEngine->RegisterGlobalFunction("bool isKeyUp(string)", asMETHODPR(Engine, isKeyUp, (const string&), bool), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
@@ -54,9 +56,9 @@ Engine::Engine() :
     r = ScriptEngine->RegisterGlobalFunction("MousePosition getMousePosition()", asMETHOD(Engine, getMousePosition), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
 #ifdef NDEBUG
-    ShowFPS(false);
+    showFPS(false);
 #else
-    ShowFPS(true);
+    showFPS(true);
 #endif
 
     Console->SetTitle("Console");
@@ -339,12 +341,12 @@ void Engine::CalculateFPS(float timeStep)
     }
 }
 
-void Engine::ShowFPS(bool show)
+void Engine::showFPS(bool show)
 {
-    ShowFPS(show, "titlebar");
+    showFPS(show, "titlebar");
 }
 
-void Engine::ShowFPS(bool show, string function)
+void Engine::showFPS(bool show, string function)
 {
     if (show)
     {
@@ -446,4 +448,21 @@ bool Engine::wasMouseButtonReleased(const std::string& button)
 
 const MousePosition Engine::getMousePosition() const {
     return mousePosition;
+}
+
+void Engine::printModules()
+{
+    asUINT modCount = ScriptEngine->GetModuleCount();
+
+    for (asUINT i = 0; i < modCount; i++)
+        Print("%$\n", ScriptEngine->GetModuleByIndex(i)->GetName());
+}
+
+void Engine::setConsoleModule(string moduleName)
+{
+    asIScriptModule* module = ScriptEngine->GetModule(moduleName.c_str());
+    if (module == nullptr)
+        PrintErr("\"%$\" module does not exist.", moduleName);
+    else
+        ConsoleModule = module;
 }
