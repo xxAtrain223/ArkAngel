@@ -19,7 +19,6 @@ class PauseState {
 public:
     PauseState() = default;
     PauseState(std::string suid, Engine *engine);
-    ~PauseState() = default;
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
     bool haltsDraw() { return false; }

@@ -4,6 +4,7 @@
 
 #include "MainMenu.hpp"
 #include "ScriptSandbox.hpp"
+#include "PhysicsSandbox.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -18,6 +19,7 @@ MainMenu::MainMenu(string suid, Engine *engine) :
         throw "Couldn't find 'data/fonts/OpenSans-Regular.ttf'";
 
     items.emplace_back(make_pair("Script Sandbox", StateMaker<ScriptSandbox>(engine)));
+    items.emplace_back(make_pair("Physics Sandbox", StateMaker<PhysicsSandbox>(engine)));
 }
 
 void MainMenu::update() {
