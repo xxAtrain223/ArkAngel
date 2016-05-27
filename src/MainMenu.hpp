@@ -14,21 +14,23 @@
 
 class MainMenu {
     Engine *engine = nullptr;
+    const std::string SUID;
 
     sf::Font optionFont;
 
-    std::vector<std::pair<std::string, std::function<StateErasure()>>> items;
+    std::vector<std::pair<std::string, std::function<StateErasure(std::string)>>> items;
     int selected = 0;
 
 public:
     MainMenu() = default;
-    MainMenu(Engine *engine);
+    MainMenu(std::string suid, Engine *engine);
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
     bool haltsDraw() { return true; }
     void handleEvent(sf::Event event) {}
     void update();
     void draw();
+    const std::string getSUID() { return SUID; }
 };
 
 #endif //ARKANGEL_MAINMENU_HPP

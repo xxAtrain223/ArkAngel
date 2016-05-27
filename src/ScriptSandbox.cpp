@@ -9,8 +9,9 @@
 
 using namespace std;
 
-ScriptSandbox::ScriptSandbox(Engine *engine) :
-    engine(engine)
+ScriptSandbox::ScriptSandbox(string suid, Engine *engine) :
+    engine(engine),
+    SUID(suid)
 {
     int r;
     r = engine->ScriptEngine->RegisterGlobalFunction("void executeScript(string)", asMETHODPR(ScriptSandbox, executeScript, (string), void), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
@@ -84,6 +85,7 @@ void ScriptSandbox::executeScript(std::string filename, std::string moduleName)
 void ScriptSandbox::startNewModule(std::string moduleName)
 {
     builder.StartNewModule(engine->ScriptEngine, moduleName.c_str());
+    engine->Gsm.registerModule(SUID, moduleName);
 }
 
 void ScriptSandbox::addSection(std::string filename)
@@ -119,6 +121,8 @@ string ScriptSandbox::addScriptAsModule(std::string filename)
         builder.StartNewModule(engine->ScriptEngine, name.c_str());
         builder.AddSectionFromFile(filename.c_str());
         builder.BuildModule();
+
+        engine->Gsm.registerModule(SUID, name);
 
         return name;
     }

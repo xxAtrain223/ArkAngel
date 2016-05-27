@@ -15,6 +15,7 @@
 #include <tuple>
 #include <memory>
 #include <atomic>
+#include <unordered_map>
 
 // Reflection stuff
 class Engine;
@@ -27,6 +28,7 @@ namespace _detail_GameStateManager {
     RASPBERRY_DECL_METHOD(has_handleEvent, handleEvent);
     RASPBERRY_DECL_METHOD(has_update, update);
     RASPBERRY_DECL_METHOD(has_draw, draw);
+    RASPBERRY_DECL_METHOD(has_getSUID, getSUID);
 
 // Erasure Type
 
@@ -36,7 +38,8 @@ namespace _detail_GameStateManager {
             has_haltsDraw<bool()>,
             has_handleEvent<void(sf::Event)>,
             has_update<void()>,
-            has_draw<void()>
+            has_draw<void()>,
+            has_getSUID<const std::string()>
     >;
 
 // State manager
@@ -53,7 +56,9 @@ namespace _detail_GameStateManager {
     {
         Engine* engine;
 
-        std::vector<std::tuple<StateErasure, std::string>> states;
+        std::vector<StateErasure> states;
+
+        std::unordered_map<std::string, std::vector<std::string>> stateModules;
 
         inline std::uint32_t next_uid() {
             static std::atomic<std::uint32_t> uid {0};
@@ -73,7 +78,7 @@ namespace _detail_GameStateManager {
          *
          * @param state Game state
          */
-        void push(std::function<StateErasure()> state);
+        void push(std::function<StateErasure(std::string)> state);
 
         /**
          * Pops a state off the stack
@@ -115,12 +120,14 @@ namespace _detail_GameStateManager {
         bool empty();
 
         int size();
+
+        void registerModule(std::string suid, std::string moduleName);
     };
 
     template <typename T, typename... Ts>
-    std::function<StateErasure()> StateMaker(Ts... ts) {
-        return [=](){
-            return std::make_unique<T>(ts...);
+    std::function<StateErasure(std::string)> StateMaker(Ts... ts) {
+        return [=](std::string suid){
+            return std::make_unique<T>(suid, ts...);
         };
     }
 

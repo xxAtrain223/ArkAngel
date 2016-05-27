@@ -11,8 +11,9 @@
 
 class ScriptSandbox {
     Engine* engine;
-    CScriptBuilder builder;
+    const std::string SUID;
 
+    CScriptBuilder builder;
     sf::Clock Clock;
 
     void executeScript(std::string filename);
@@ -28,7 +29,7 @@ class ScriptSandbox {
 
 public:
     ScriptSandbox() = default;
-    ScriptSandbox(Engine *engine);
+    ScriptSandbox(std::string suid, Engine *engine);
     ~ScriptSandbox();
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
@@ -36,6 +37,7 @@ public:
     void handleEvent(sf::Event event);
     void update();
     void draw();
+    const std::string getSUID() { return SUID; }
 };
 
 

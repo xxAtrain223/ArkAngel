@@ -10,7 +10,10 @@
 
 using namespace std;
 
-MainMenu::MainMenu(Engine *engine) : engine(engine) {
+MainMenu::MainMenu(string suid, Engine *engine) :
+    engine(engine),
+    SUID(suid)
+{
     if (!optionFont.loadFromFile("data/fonts/OpenSans-Regular.ttf"))
         throw "Couldn't find 'data/fonts/OpenSans-Regular.ttf'";
 

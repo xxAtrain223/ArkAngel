@@ -4,8 +4,11 @@
 
 #include "PauseState.hpp"
 
-PauseState::PauseState(Engine *engine) :
-    engine(engine)
+using namespace std;
+
+PauseState::PauseState(string suid, Engine *engine) :
+    engine(engine),
+    SUID(suid)
 {
     rect.setSize(sf::Vector2f(engine->Window.getSize()));
     rect.setFillColor(sf::Color(0, 0, 0, 127));

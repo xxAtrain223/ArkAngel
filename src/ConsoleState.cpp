@@ -6,8 +6,9 @@
 
 using namespace std;
 
-ConsoleState::ConsoleState(Engine *engine) :
-        engine(engine)
+ConsoleState::ConsoleState(string suid, Engine *engine) :
+    engine(engine),
+    SUID(suid)
 {
     engine->Console->Show(true);
 }

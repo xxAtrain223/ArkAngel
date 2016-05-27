@@ -9,17 +9,29 @@
 
 namespace _detail_GameStateManager {
 
-    void GameStateManager::push(std::function<StateErasure()> state)
+    void GameStateManager::push(std::function<StateErasure(std::string)> state)
     {
-        std::string uid = PrintStr("%$", next_uid());
-        engine->ScriptEngine->BeginConfigGroup(uid.c_str());
-        states.emplace_back(std::make_tuple(state(), uid));
+        std::string suid = PrintStr("%$", next_uid());
+        stateModules.insert(make_pair(suid, std::vector<std::string>()));
+
+        engine->ScriptEngine->BeginConfigGroup(suid.c_str());
+        states.emplace_back(state(suid));
         engine->ScriptEngine->EndConfigGroup();
     }
 
     void GameStateManager::pop()
     {
-        engine->ScriptEngine->RemoveConfigGroup(std::get<1>(states.back()).c_str());
+        std::string suid = states.back().getSUID();
+
+        for (auto moduleName : stateModules.at(suid))
+        {
+            if (engine->ConsoleModule->GetName() == moduleName)
+                engine->ConsoleModule = engine->ScriptEngine->GetModule("ConsoleModule");
+            engine->ScriptEngine->DiscardModule(moduleName.c_str());
+        }
+        stateModules.erase(suid);
+
+        engine->ScriptEngine->RemoveConfigGroup(suid.c_str());
         states.pop_back();
     }
 
@@ -37,9 +49,8 @@ namespace _detail_GameStateManager {
     {
         for (auto& state : reverse(states))
         {
-            //bool halts = state.haltsHandleEvent();
-            bool halts = std::get<0>(state).haltsHandleEvent();
-            std::get<0>(state).handleEvent(event);
+            bool halts = state.haltsHandleEvent();
+            state.handleEvent(event);
             if (halts)
             {
                 return;
@@ -51,9 +62,9 @@ namespace _detail_GameStateManager {
     {
         for (auto& state : reverse(states))
         {
-            bool halts = std::get<0>(state).haltsUpdate();
+            bool halts = state.haltsUpdate();
             auto c = states.size();
-            std::get<0>(state).update();
+            state.update();
             if (c != states.size()) return;
             if (halts) return;
         }
@@ -66,7 +77,7 @@ namespace _detail_GameStateManager {
             for (auto riter = std::rbegin(states), eriter = std::rend(states); riter != eriter; ++riter)
             {
                 auto iter = next(riter).base();
-                auto halts = std::get<0>(*iter).haltsDraw();
+                auto halts = iter->haltsDraw();
                 if (halts) return iter;
             }
             return begin(states);
@@ -75,8 +86,12 @@ namespace _detail_GameStateManager {
         auto start = findStart();
         for (auto& state : make_iterator_range(start, end(states)))
         {
-            std::get<0>(state).draw();
+            state.draw();
         }
     }
 
+    void GameStateManager::registerModule(std::string suid, std::string moduleName)
+    {
+        stateModules.at(suid).emplace_back(moduleName);
+    }
 } // namespace _detail_GameStateManager

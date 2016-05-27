@@ -11,12 +11,13 @@
 
 class ConsoleState {
     Engine *engine = nullptr;
+    const std::string SUID;
 
     sf::Clock Clock;
 
 public:
     ConsoleState() = default;
-    ConsoleState(Engine *engine);
+    ConsoleState(std::string suid, Engine *engine);
     ~ConsoleState();
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return false; }
@@ -24,6 +25,7 @@ public:
     void handleEvent(sf::Event event);
     void update();
     void draw() {}
+    const std::string getSUID() { return SUID; }
 };
 
 

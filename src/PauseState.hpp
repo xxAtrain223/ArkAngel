@@ -11,13 +11,14 @@
 
 class PauseState {
     Engine* engine;
+    const std::string SUID;
 
     sf::RectangleShape rect;
     sf::Font font;
 
 public:
     PauseState() = default;
-    PauseState(Engine *engine);
+    PauseState(std::string suid, Engine *engine);
     ~PauseState() = default;
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
@@ -25,6 +26,7 @@ public:
     void handleEvent(sf::Event event) {}
     void update();
     void draw();
+    const std::string getSUID() { return SUID; }
 };
 
 #endif //ARKANGEL_PAUSESTATE_HPP
