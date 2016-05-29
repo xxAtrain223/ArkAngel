@@ -13,98 +13,103 @@ PhysicsSandbox::PhysicsSandbox(std::string suid, Engine *engine) :
     cam.setCenter(0, 0);
     cam.setSize(windowSize.x, windowSize.y);
 
-    world = new b2World(b2Vec2(0.f, -9.81f * 4));
+    world = new b2World(b2Vec2(0.f, -9.81f * 1));
     debugDraw = new Box2dDebugDraw(engine->Window, 12.f);
-    debugDraw->SetFlags(b2Draw::e_shapeBit);
+    debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit);
     world->SetDebugDraw(debugDraw);
-    timeStep = 1.f / 60.f;
+    timeStep = 1.f / 120.f;
     velIter = 8;
     posIter = 3;
     accumulator = 0;
 
-    int32 m_fixtureCount = 0;
-    b2Timer timer;
-
+    b2Body* ground = NULL;
     {
-        float32 a = 0.5f;
         b2BodyDef bd;
-        bd.position.y = -a;
-        b2Body* ground = world->CreateBody(&bd);
+        ground = world->CreateBody(&bd);
 
-#if 1
-        int32 N = 200;
-        int32 M = 10;
-        b2Vec2 position;
-        position.y = 0.0f;
-        for (int32 j = 0; j < M; ++j)
-        {
-            position.x = -N * a;
-            for (int32 i = 0; i < N; ++i)
-            {
-                b2PolygonShape shape;
-                shape.SetAsBox(a, a, position, 0.0f);
-                ground->CreateFixture(&shape, 0.0f);
-                ++m_fixtureCount;
-                position.x += 2.0f * a;
-            }
-            position.y -= 2.0f * a;
-        }
-#else
-        int32 N = 200;
-        int32 M = 10;
-        b2Vec2 position;
-        position.x = -N * a;
-        for (int32 i = 0; i < N; ++i)
-        {
-            position.y = 0.0f;
-            for (int32 j = 0; j < M; ++j)
-            {
-                b2PolygonShape shape;
-                shape.SetAsBox(a, a, position, 0.0f);
-                ground->CreateFixture(&shape, 0.0f);
-                position.y -= 2.0f * a;
-            }
-            position.x += 2.0f * a;
-        }
-#endif
+        b2EdgeShape shape;
+        shape.Set(b2Vec2(-40.0f, 0.0f), b2Vec2(40.0f, 0.0f));
+        ground->CreateFixture(&shape, 0.0f);
     }
 
     {
-        float32 a = 0.5f;
-        b2PolygonShape shape;
-        shape.SetAsBox(a, a);
+        b2Body* prevBody = ground;
 
-        b2Vec2 x(-7.0f, 0.75f);
-        b2Vec2 y;
-        b2Vec2 deltaX(0.5625f, 1.25f);
-        b2Vec2 deltaY(1.125f, 0.0f);
-
-        for (int32 i = 0; i < 20; ++i)
+        // Define crank.
         {
-            y = x;
+            b2PolygonShape shape;
+            shape.SetAsBox(0.5f, 2.0f);
 
-            for (int32 j = i; j < 20; ++j)
-            {
-                b2BodyDef bd;
-                bd.type = b2_dynamicBody;
-                bd.position = y;
+            b2BodyDef bd;
+            bd.type = b2_dynamicBody;
+            bd.position.Set(0.0f, 7.0f);
+            b2Body* body = world->CreateBody(&bd);
+            body->CreateFixture(&shape, 2.0f);
 
-                //if (i == 0 && j == 0)
-                //{
-                //	bd.allowSleep = false;
-                //}
-                //else
-                //{
-                //	bd.allowSleep = true;
-                //}
+            b2RevoluteJointDef rjd;
+            rjd.Initialize(prevBody, body, b2Vec2(0.0f, 5.0f));
+            rjd.motorSpeed = 1.0f * b2_pi;
+            rjd.maxMotorTorque = 10000.0f;
+            rjd.enableMotor = true;
+            b2RevoluteJoint* m_joint1 = (b2RevoluteJoint*)world->CreateJoint(&rjd);
 
-                b2Body* body = world->CreateBody(&bd);
-                body->CreateFixture(&shape, 5.0f);
-                ++m_fixtureCount;
-                y += deltaY;
-            }
+            prevBody = body;
+        }
 
-            x += deltaX;
+        // Define follower.
+        {
+            b2PolygonShape shape;
+            shape.SetAsBox(0.5f, 4.0f);
+
+            b2BodyDef bd;
+            bd.type = b2_dynamicBody;
+            bd.position.Set(0.0f, 13.0f);
+            b2Body* body = world->CreateBody(&bd);
+            body->CreateFixture(&shape, 2.0f);
+
+            b2RevoluteJointDef rjd;
+            rjd.Initialize(prevBody, body, b2Vec2(0.0f, 9.0f));
+            rjd.enableMotor = false;
+            world->CreateJoint(&rjd);
+
+            prevBody = body;
+        }
+
+        // Define piston
+        {
+            b2PolygonShape shape;
+            shape.SetAsBox(1.5f, 1.5f);
+
+            b2BodyDef bd;
+            bd.type = b2_dynamicBody;
+            bd.fixedRotation = true;
+            bd.position.Set(0.0f, 17.0f);
+            b2Body* body = world->CreateBody(&bd);
+            body->CreateFixture(&shape, 2.0f);
+
+            b2RevoluteJointDef rjd;
+            rjd.Initialize(prevBody, body, b2Vec2(0.0f, 17.0f));
+            world->CreateJoint(&rjd);
+
+            b2PrismaticJointDef pjd;
+            pjd.Initialize(ground, body, b2Vec2(0.0f, 17.0f), b2Vec2(0.0f, 1.0f));
+
+            pjd.maxMotorForce = 1000.0f;
+            pjd.enableMotor = true;
+
+            b2PrismaticJoint* m_joint2 = (b2PrismaticJoint*)world->CreateJoint(&pjd);
+        }
+
+        // Create a payload
+        {
+            b2PolygonShape shape;
+            shape.SetAsBox(1.5f, 1.5f);
+
+            b2BodyDef bd;
+            bd.type = b2_dynamicBody;
+            bd.position.Set(0.0f, 23.0f);
+            b2Body* body = world->CreateBody(&bd);
+            body->CreateFixture(&shape, 2.0f);
         }
     }
 }
@@ -135,6 +140,7 @@ void PhysicsSandbox::update()
 
 void PhysicsSandbox::draw()
 {
+    engine->Window.clear(sf::Color(76, 76, 76));
     engine->Window.setView(cam);
     world->DrawDebugData();
     engine->Window.setView(engine->Window.getDefaultView());

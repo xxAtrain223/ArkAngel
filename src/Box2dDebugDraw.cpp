@@ -92,7 +92,7 @@ void Box2dDebugDraw::DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Col
 {
     sf::Vertex line[] = {
             sf::Vertex(sf::Vector2f(p1.x * PixelsPerMeter, p1.y * -PixelsPerMeter), B2SFColor(color)),
-            sf::Vertex(sf::Vector2f(p1.x * PixelsPerMeter, p1.y * -PixelsPerMeter), B2SFColor(color))
+            sf::Vertex(sf::Vector2f(p2.x * PixelsPerMeter, p2.y * -PixelsPerMeter), B2SFColor(color))
     };
 
     Window->draw(line, 2, sf::Lines);
