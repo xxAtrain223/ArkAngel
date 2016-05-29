@@ -85,6 +85,7 @@ private:
     int currentTick = 0;
     std::vector<KeyState> keyboard = std::vector<KeyState>(sf::Keyboard::KeyCount);
     std::vector<MouseButtonState> mouseButtons = std::vector<MouseButtonState>(sf::Mouse::ButtonCount);
+    MousePosition lastMousePosition;
     MousePosition mousePosition;
 
     std::unordered_map<std::string, sf::Keyboard::Key> sfKeyMap;
@@ -127,6 +128,7 @@ public:
     bool wasMouseButtonReleased(const std::string& button);
 
     const MousePosition getMousePosition() const;
+    const MousePosition getMousePositionDelta() const;
 };
 
 #endif //ARKANGEL_ENGINE_HPP

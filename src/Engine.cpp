@@ -219,6 +219,7 @@ void Engine::go()
 void Engine::poll_events()
 {
     sf::Event event;
+    lastMousePosition = mousePosition;
 
     while(Window.pollEvent(event))
     {
@@ -446,8 +447,18 @@ bool Engine::wasMouseButtonReleased(const std::string& button)
     return wasMouseButtonReleased(sfButtonMap.at(button));
 }
 
-const MousePosition Engine::getMousePosition() const {
+const MousePosition Engine::getMousePosition() const
+{
     return mousePosition;
+}
+
+const MousePosition Engine::getMousePositionDelta() const
+{
+    MousePosition pos;
+    pos.x = lastMousePosition.x - mousePosition.x;
+    pos.y = lastMousePosition.y - mousePosition.y;
+    pos.wheel = lastMousePosition.wheel - mousePosition.wheel;
+    return pos;
 }
 
 void Engine::printModules()

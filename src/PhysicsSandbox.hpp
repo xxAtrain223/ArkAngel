@@ -16,6 +16,9 @@ class PhysicsSandbox
     Engine *engine = nullptr;
     const std::string SUID;
 
+    sf::Vector2f windowSize;
+    sf::View cam;
+
     b2World* world;
     Box2dDebugDraw* debugDraw;
     float timeStep;
