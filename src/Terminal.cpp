@@ -151,6 +151,7 @@ void Terminal::PrintClass(std::string Str, std::string Class)
     label->SetClass(Class);
     LogBox->PackEnd(label);
 
+    ScrollWindow->Refresh();
     auto adj = ScrollWindow->GetVerticalAdjustment();
     adj->SetValue(adj->GetUpper());
 }
