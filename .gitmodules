@@ -17,3 +17,7 @@
 [submodule "print"]
 	path = print
 	url = git@github.com:xxAtrain223/print.git
+[submodule "Thor"]
+	path = Thor
+	url = git@github.com:xxAtrain223/Thor.git
+	branch = cmake
