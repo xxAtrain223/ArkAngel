@@ -19,11 +19,16 @@ class PhysicsSandbox
     sf::Vector2f windowSize;
     sf::View cam;
 
+    b2Vec2 getWorldPos(sf::Vector2i p);
+    b2Vec2 getWorldPos(MousePosition p);
+
     b2World* world;
     Box2dDebugDraw* debugDraw;
     float timeStep;
     int velIter;
     int posIter;
+    b2Body* groundBody;
+    b2MouseJoint* mouseJoint = NULL;
 
     sf::Clock clock;
     float accumulator;

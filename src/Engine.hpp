@@ -129,6 +129,7 @@ public:
 
     const MousePosition getMousePosition() const;
     const MousePosition getMousePositionDelta() const;
+    const bool hasMouseMoved() const;
 };
 
 #endif //ARKANGEL_ENGINE_HPP

@@ -477,3 +477,8 @@ void Engine::setConsoleModule(string moduleName)
     else
         ConsoleModule = module;
 }
+
+const bool Engine::hasMouseMoved() const
+{
+    return (lastMousePosition.x != mousePosition.x) || (lastMousePosition.y != mousePosition.y);
+}

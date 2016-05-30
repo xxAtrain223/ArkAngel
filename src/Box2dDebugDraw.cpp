@@ -128,3 +128,13 @@ sf::Color Box2dDebugDraw::B2SFColor(const b2Color &color, int alpha)
 {
     return sf::Color((sf::Uint8)(color.r*255), (sf::Uint8)(color.g*255), (sf::Uint8)(color.b*255), (sf::Uint8) alpha);
 }
+
+float Box2dDebugDraw::getPixelsPerMeter()
+{
+    return PixelsPerMeter;
+}
+
+float Box2dDebugDraw::getMetersPerPixel()
+{
+    return MetersPerPixel;
+}

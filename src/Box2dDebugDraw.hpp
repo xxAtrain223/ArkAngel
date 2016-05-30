@@ -28,6 +28,9 @@ public:
     void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color);
     void DrawTransform(const b2Transform& xf);
     sf::Color B2SFColor(const b2Color &color, int alpha = 255);
+
+    float getPixelsPerMeter();
+    float getMetersPerPixel();
 };
 
 
