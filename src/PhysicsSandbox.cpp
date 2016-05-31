@@ -6,17 +6,33 @@
 #include "QueryCallback.hpp"
 #include "Util.hpp"
 
+#include <vector>
+
+using namespace std;
+
 PhysicsSandbox::PhysicsSandbox(std::string suid, Engine *engine) :
     engine(engine),
     SUID(suid)
 {
-    windowSize = sf::Vector2f(engine->Window.getSize().x, engine->Window.getSize().y);
+    sf::Vector2f windowSize = sf::Vector2f(engine->Window.getSize().x, engine->Window.getSize().y);
     cam.setCenter(0, 0);
     cam.setSize(windowSize.x, windowSize.y);
 
-    world = new b2World(b2Vec2(0.f, -9.81f * 1));
+    string errMessage;
+    b2dJson json;
+    world = json.readFromFile("data/b2worlds/truck-min.json", errMessage);
+    if (errMessage.size() > 0)
+    {
+        fprintf(stderr, "%s\n", errMessage.c_str());
+        fflush(stderr);
+    }
+
+    json.getBodiesByName("truckwheel", wheels);
+    json.getBodiesByName("truckchassis", chassis);
+
+    //world = new b2World(b2Vec2(0.f, -9.81f * 1));
     debugDraw = new Box2dDebugDraw(engine->Window, 12.f);
-    debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit);
+    debugDraw->SetFlags(b2Draw::e_shapeBit);
     world->SetDebugDraw(debugDraw);
     timeStep = 1.f / 120.f;
     velIter = 8;
@@ -26,6 +42,7 @@ PhysicsSandbox::PhysicsSandbox(std::string suid, Engine *engine) :
     b2BodyDef bodyDef;
     groundBody = world->CreateBody(&bodyDef);
 
+#if 0
 #if 0
 
     int32 m_fixtureCount = 0;
@@ -207,6 +224,7 @@ PhysicsSandbox::PhysicsSandbox(std::string suid, Engine *engine) :
         }
     }
 #endif
+#endif
 }
 
 void PhysicsSandbox::update()
@@ -220,7 +238,7 @@ void PhysicsSandbox::update()
     MousePosition delta = engine->getMousePositionDelta();
 
     if (engine->isMouseButtonDown(sf::Mouse::Right))
-        cam.move(sf::Vector2f(delta.x, delta.y) / (windowSize.x / cam.getSize().x));
+        cam.move(sf::Vector2f(delta.x, delta.y) / (engine->Window.getSize().x / cam.getSize().x));
     if (delta.wheel != 0)
         cam.zoom(1 + delta.wheel * 0.1f);
 
@@ -263,9 +281,30 @@ void PhysicsSandbox::update()
     }
 
     if (engine->hasMouseMoved())
-    {
         if (mouseJoint)
             mouseJoint->SetTarget(getWorldPos(engine->getMousePosition()));
+
+    float maxSpeed = 20;
+    float desiredSpeed = 0;
+
+    if (engine->isKeyDown(sf::Keyboard::A))
+        desiredSpeed += maxSpeed;
+    if (engine->isKeyDown(sf::Keyboard::D))
+        desiredSpeed -= maxSpeed;
+
+    if (desiredSpeed != 0)
+    {
+        for (auto b : wheels)
+            b->SetAngularVelocity(desiredSpeed);
+
+        chassis[0]->ApplyTorque(-125 * Sign(desiredSpeed), true);
+    }
+
+    if (mouseJoint == NULL)
+    {
+        b2Vec2 chassisPos = chassis[0]->GetPosition();
+        cam.setCenter(chassisPos.x * debugDraw->getPixelsPerMeter(),
+                      chassisPos.y * debugDraw->getPixelsPerMeter() * -1);
     }
 
     sf::Time t = clock.restart();

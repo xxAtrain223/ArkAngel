@@ -67,7 +67,7 @@ void Box2dDebugDraw::DrawCircle(const b2Vec2 &center, float32 radius, const b2Co
 {
     sf::CircleShape s;
 
-    s.setPosition(center.x * PixelsPerMeter, center.y * -PixelsPerMeter);
+    s.setPosition(center.x * PixelsPerMeter - radius * PixelsPerMeter + 1, center.y * -PixelsPerMeter - radius * PixelsPerMeter + 1);
     s.setRadius(radius * PixelsPerMeter - 1);
     s.setOutlineThickness(1.f);
     s.setOutlineColor(B2SFColor(color));
@@ -79,11 +79,14 @@ void Box2dDebugDraw::DrawSolidCircle(const b2Vec2 &center, float32 radius, const
 {
     sf::CircleShape s;
 
-    s.setPosition(center.x * PixelsPerMeter, center.y * -PixelsPerMeter);
+    s.setPosition(center.x * PixelsPerMeter - radius * PixelsPerMeter + 1, center.y * -PixelsPerMeter - radius * PixelsPerMeter + 1);
     s.setRadius(radius * PixelsPerMeter - 1);
     s.setFillColor(B2SFColor(color, 50));
     s.setOutlineColor(B2SFColor(color));
     s.setOutlineThickness(1.f);
+
+    b2Vec2 p = center + radius * axis;
+    DrawSegment(center, p, color);
 
     Window->draw(s);
 }

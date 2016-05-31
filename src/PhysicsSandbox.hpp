@@ -17,7 +17,6 @@ class PhysicsSandbox
     Engine *engine = nullptr;
     const std::string SUID;
 
-    sf::Vector2f windowSize;
     sf::View cam;
 
     b2Vec2 getWorldPos(sf::Vector2i p);
@@ -33,6 +32,9 @@ class PhysicsSandbox
 
     sf::Clock clock;
     float accumulator;
+
+    std::vector<b2Body*> wheels;
+    std::vector<b2Body*> chassis;
 
 public:
     PhysicsSandbox() = default;
