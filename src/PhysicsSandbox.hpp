@@ -9,6 +9,7 @@
 #include "Box2dDebugDraw.hpp"
 
 #include <Box2D/Box2D.h>
+#include <b2dJson.h>
 #include <sfml/Graphics.hpp>
 
 class PhysicsSandbox

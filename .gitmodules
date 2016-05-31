@@ -21,3 +21,7 @@
 	path = Thor
 	url = git@github.com:xxAtrain223/Thor.git
 	branch = cmake
+[submodule "b2dJson"]
+	path = b2dJson
+	url = git@github.com:xxAtrain223/b2dJson.git
+	branch = c++_cmake
