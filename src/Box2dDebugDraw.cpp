@@ -5,6 +5,7 @@
 #include "Box2dDebugDraw.hpp"
 #include "Print.hpp"
 #include <Thor/Vectors/VectorAlgebra2D.hpp>
+#include "LineShape.hpp"
 
 using namespace std;
 
@@ -93,20 +94,16 @@ void Box2dDebugDraw::DrawSolidCircle(const b2Vec2 &center, float32 radius, const
 
 void Box2dDebugDraw::DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color)
 {
-    sf::Vertex line[] = {
-            sf::Vertex(sf::Vector2f(p1.x * PixelsPerMeter, p1.y * -PixelsPerMeter), B2SFColor(color)),
-            sf::Vertex(sf::Vector2f(p2.x * PixelsPerMeter, p2.y * -PixelsPerMeter), B2SFColor(color))
-    };
+    sf::Vector2f Point1(p1.x * PixelsPerMeter, p1.y * -PixelsPerMeter);
+    sf::Vector2f Point2(p2.x * PixelsPerMeter, p2.y * -PixelsPerMeter);
+    LineShape segment(Point1, Point2, 1.f, B2SFColor(color));
 
-    Window->draw(line, 2, sf::Lines);
+    Window->draw(segment);
 }
 
 void Box2dDebugDraw::DrawTransform(const b2Transform &xf)
 {
-    float x,y, lineSize, lineProportion;
-    x = xf.p.x * PixelsPerMeter;
-    y = xf.p.y * PixelsPerMeter;
-    lineProportion = 0.15; // 0.15 ~ 10 pixels
+    float lineProportion = 0.15; // 0.15 ~ 10 pixels
     b2Vec2 p1 = xf.p, p2;
 
     //red (X axis)
