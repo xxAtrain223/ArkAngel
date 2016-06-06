@@ -11,6 +11,7 @@
 #include <Box2D/Box2D.h>
 #include <b2dJson.h>
 #include <sfml/Graphics.hpp>
+#include <scriptarray.h>
 
 class PhysicsSandbox
 {
@@ -22,23 +23,39 @@ class PhysicsSandbox
     b2Vec2 getWorldPos(sf::Vector2i p);
     b2Vec2 getWorldPos(MousePosition p);
 
-    b2World* world;
-    Box2dDebugDraw* debugDraw;
+    b2World* world = nullptr;
+    Box2dDebugDraw debugDraw;
     float timeStep;
     int velIter;
     int posIter;
     b2Body* groundBody;
     b2MouseJoint* mouseJoint = NULL;
 
+    b2dJson json;
+
     sf::Clock clock;
     float accumulator;
 
-    std::vector<b2Body*> wheels;
-    std::vector<b2Body*> chassis;
+    void loadB2World(std::string filename);
+
+    float getTimeStep();
+    void setTimeStep(float ts);
+    int getVelocityIterations();
+    void setVelocityIterations(int velocityIterations);
+    int getPositionIterations();
+    void setPositionIterations(int positionIterations);
+
+    void setCameraPosition(float x, float y);
+    void setCameraZoom(float z);
+
+    CScriptArray* getBodiesByName(std::string name);
+    CScriptArray* getFixturesByName(std::string name);
+    CScriptArray* getJointsByName(std::string name);
 
 public:
     PhysicsSandbox() = default;
     PhysicsSandbox(std::string suid, Engine *engine);
+    ~PhysicsSandbox();
     bool haltsHandleEvent() { return true; }
     bool haltsUpdate() { return true; }
     bool haltsDraw() { return true; }
