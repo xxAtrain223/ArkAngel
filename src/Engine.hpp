@@ -16,6 +16,7 @@
 #include <scriptstdstring.h>
 #include <scriptbuilder.h>
 #include <scripthelper.h>
+#include <scriptarray.h>
 
 #include "Terminal.hpp"
 #include "Print.hpp"

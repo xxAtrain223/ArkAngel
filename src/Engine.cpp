@@ -28,6 +28,7 @@ Engine::Engine() :
 
     int r = ScriptEngine->SetMessageCallback(asMETHOD(Engine, AsMessageCallback), this, asCALL_THISCALL); assert(r >= 0);
     RegisterStdString(ScriptEngine);
+    RegisterScriptArray(ScriptEngine, true);
 
     r = ScriptEngine->RegisterGlobalFunction("void print(bool)", asFUNCTIONPR(printAS, (bool), void), asCALL_CDECL); assert(r >= 0);
     r = ScriptEngine->RegisterGlobalFunction("void print(int)", asFUNCTIONPR(printAS, (int), void), asCALL_CDECL); assert(r >= 0);
