@@ -11,6 +11,7 @@
 #include <Box2D/Box2D.h>
 #include <b2dJson.h>
 #include <sfml/Graphics.hpp>
+#include <Thor/Time.hpp>
 #include <scriptarray.h>
 
 class PhysicsSandbox
@@ -33,7 +34,7 @@ class PhysicsSandbox
 
     b2dJson json;
 
-    sf::Clock clock;
+    thor::StopWatch clock;
     float accumulator;
 
     void loadB2World(std::string filename);
@@ -63,6 +64,8 @@ public:
     void update();
     void draw();
     const std::string getSUID() { return SUID; }
+    void onPause();
+    void onResume();
 };
 
 

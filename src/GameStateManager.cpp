@@ -9,14 +9,31 @@
 
 namespace _detail_GameStateManager {
 
-    void GameStateManager::push(std::function<StateErasure(std::string)> state)
+    void GameStateManager::push(std::function<StateErasure(std::string)> stateMaker)
     {
         std::string suid = PrintStr("%$", next_uid());
         stateModules.insert(make_pair(suid, std::vector<std::string>()));
 
         engine->ScriptEngine->BeginConfigGroup(suid.c_str());
-        states.emplace_back(state(suid));
+        states.emplace_back(stateMaker(suid));
         engine->ScriptEngine->EndConfigGroup();
+
+        if (states.back().haltsUpdate())
+        {
+            bool first = true;
+            for (StateErasure& state : reverse(states))
+            {
+                if (first)
+                {
+                    first = false;
+                    continue;
+                }
+
+                state.onPause();
+                if (state.haltsUpdate())
+                    break;
+            }
+        }
     }
 
     void GameStateManager::pop()
@@ -30,6 +47,23 @@ namespace _detail_GameStateManager {
             engine->ScriptEngine->DiscardModule(moduleName.c_str());
         }
         stateModules.erase(suid);
+
+        if (states.back().haltsUpdate())
+        {
+            bool first = true;
+            for (StateErasure& state : reverse(states))
+            {
+                if (first)
+                {
+                    first = false;
+                    continue;
+                }
+
+                state.onResume();
+                if (state.haltsUpdate())
+                    break;
+            }
+        }
 
         engine->ScriptEngine->RemoveConfigGroup(suid.c_str());
         states.pop_back();
@@ -47,7 +81,7 @@ namespace _detail_GameStateManager {
 
     void GameStateManager::handleEvent(sf::Event event)
     {
-        for (auto& state : reverse(states))
+        for (StateErasure& state : reverse(states))
         {
             bool halts = state.haltsHandleEvent();
             state.handleEvent(event);
@@ -60,7 +94,7 @@ namespace _detail_GameStateManager {
 
     void GameStateManager::update()
     {
-        for (auto& state : reverse(states))
+        for (StateErasure& state : reverse(states))
         {
             bool halts = state.haltsUpdate();
             auto c = states.size();

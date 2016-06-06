@@ -26,7 +26,7 @@ target_link_libraries(_ArkAngel ginseng)
 target_link_libraries(_ArkAngel raspberry)
 target_link_libraries(_ArkAngel bait)
 target_link_libraries(_ArkAngel print)
-target_link_libraries(_ArkAngel ${BOX2D_LIBRARIES})
+target_link_libraries(_ArkAngel ${BOX2D_LIBRARIES} b2dJson)
 target_link_libraries(_ArkAngel AngelScript
                                 AngelScript_scriptbuilder
                                 AngelScript_scripthelper
@@ -35,8 +35,8 @@ target_link_libraries(_ArkAngel AngelScript
                                 AngelScript_scriptdictionary
                                 AngelScript_scriptmath)
 target_link_libraries(_ArkAngel jsoncpp)
-target_link_libraries(_ArkAngel b2dJson)
 add_definitions(-DSFGUI_STATIC)
+add_definitions(-DTHOR_EXPORTS)
 
 add_executable(ArkAngel "src/Main.cpp")
 set_property(TARGET ArkAngel PROPERTY CXX_STANDARD 14)

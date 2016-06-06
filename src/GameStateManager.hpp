@@ -29,6 +29,8 @@ namespace _detail_GameStateManager {
     RASPBERRY_DECL_METHOD(has_update, update);
     RASPBERRY_DECL_METHOD(has_draw, draw);
     RASPBERRY_DECL_METHOD(has_getSUID, getSUID);
+    RASPBERRY_DECL_METHOD(has_onPause, onPause);
+    RASPBERRY_DECL_METHOD(has_onResume, onResume);
 
 // Erasure Type
 
@@ -39,7 +41,9 @@ namespace _detail_GameStateManager {
             has_handleEvent<void(sf::Event)>,
             has_update<void()>,
             has_draw<void()>,
-            has_getSUID<const std::string()>
+            has_getSUID<const std::string()>,
+            has_onPause<void()>,
+            has_onResume<void()>
     >;
 
 // State manager
@@ -78,7 +82,7 @@ namespace _detail_GameStateManager {
          *
          * @param state Game state
          */
-        void push(std::function<StateErasure(std::string)> state);
+        void push(std::function<StateErasure(std::string)> stateMaker);
 
         /**
          * Pops a state off the stack

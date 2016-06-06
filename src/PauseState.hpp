@@ -26,6 +26,8 @@ public:
     void update();
     void draw();
     const std::string getSUID() { return SUID; }
+    void onPause() {}
+    void onResume() {}
 };
 
 #endif //ARKANGEL_PAUSESTATE_HPP

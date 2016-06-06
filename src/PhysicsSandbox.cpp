@@ -36,6 +36,8 @@ PhysicsSandbox::PhysicsSandbox(std::string suid, Engine *engine) :
     r = engine->ScriptEngine->RegisterGlobalFunction("void SetAngularVelocity(double)", asMETHOD(b2Body, SetAngularVelocity), asCALL_, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("array<b2Body>@ getBodiesByName(string)", asMETHOD(PhysicsSandbox, getBodiesByName), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     */
+
+    clock.start();
 }
 
 PhysicsSandbox::~PhysicsSandbox()
@@ -102,7 +104,8 @@ void PhysicsSandbox::update()
             mouseJoint->SetTarget(getWorldPos(engine->getMousePosition()));
 
 
-        sf::Time t = clock.restart();
+        sf::Time t = clock.getElapsedTime();
+        clock.restart();
         accumulator += t.asSeconds();
         while (accumulator >= timeStep)
         {
@@ -238,4 +241,14 @@ CScriptArray *PhysicsSandbox::getFixturesByName(std::string name)
 CScriptArray *PhysicsSandbox::getJointsByName(std::string name)
 {
     return nullptr;
+}
+
+void PhysicsSandbox::onPause()
+{
+    clock.stop();
+}
+
+void PhysicsSandbox::onResume()
+{
+    clock.start();
 }
