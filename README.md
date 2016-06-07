@@ -3,6 +3,7 @@ This is an example game for an in-progress 2D game engine.
 Getting Started
 ---------------
 Run the following commands to get your project ready to use with msys2 on Windows. **Not tested on a clean PC.**
+**Make sure to clone using ssh**
 ```
 pacman -S git cmake mingw-w64-x86_64-gcc mingw-w64-x86_64-boost mingw-w64-x86_64-sfml mingw-w64-x86_64-box2d mingw-w64-x86_64-jsoncpp
 git clone git@github.com:xxAtrain223/ArkAngel.git
