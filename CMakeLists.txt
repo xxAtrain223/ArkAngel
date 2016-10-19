@@ -35,7 +35,6 @@ target_link_libraries(_ArkAngel AngelScript
                                 AngelScript_scriptdictionary
                                 AngelScript_scriptmath)
 target_link_libraries(_ArkAngel jsoncpp)
-add_definitions(-DSFGUI_STATIC)
 add_definitions(-DTHOR_EXPORTS)
 
 add_executable(ArkAngel "src/Main.cpp")
