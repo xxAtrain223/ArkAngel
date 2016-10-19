@@ -5,6 +5,7 @@
 #include "Terminal.hpp"
 #include "Util.hpp"
 
+#include <cmath>
 #include <iostream>
 
 using namespace std;
