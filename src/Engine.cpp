@@ -56,6 +56,8 @@ Engine::Engine() :
     r = ScriptEngine->RegisterObjectProperty("MousePosition", "int wheel", asOFFSET(MousePosition, wheel)); assert(r >= 0);
     r = ScriptEngine->RegisterGlobalFunction("MousePosition getMousePosition()", asMETHOD(Engine, getMousePosition), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
+
+
 #ifdef NDEBUG
     showFPS(false);
 #else

@@ -65,8 +65,12 @@ namespace _detail_GameStateManager {
             }
         }
 
-        engine->ScriptEngine->RemoveConfigGroup(suid.c_str());
         states.pop_back();
+
+        int r;
+        r = engine->ScriptEngine->GarbageCollect(asGC_FULL_CYCLE);
+        r = engine->ScriptEngine->RemoveConfigGroup(suid.c_str());
+        assert(r >= 0);
     }
 
     bool GameStateManager::empty()

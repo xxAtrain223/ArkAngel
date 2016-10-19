@@ -53,6 +53,12 @@ class PhysicsSandbox
     CScriptArray* getFixturesByName(std::string name);
     CScriptArray* getJointsByName(std::string name);
 
+    asITypeInfo* type;
+    asIScriptModule* mod;
+    asIScriptObject* obj;
+    asIScriptContext* ctx;
+    asIScriptFunction* updateFunc;
+
 public:
     PhysicsSandbox() = default;
     PhysicsSandbox(std::string suid, Engine *engine);
