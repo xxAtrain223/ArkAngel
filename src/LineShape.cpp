@@ -4,6 +4,8 @@
 
 #include "LineShape.hpp"
 
+#include <cmath>
+
 LineShape::LineShape(sf::Vector2f &point1, sf::Vector2f &point2, float thickness, sf::Color color) :
     Point1(point1),
     Point2(point2),
