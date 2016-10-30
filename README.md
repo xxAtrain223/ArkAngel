@@ -2,17 +2,46 @@ This is an example game for an in-progress 2D game engine.
 
 Getting Started
 ---------------
-Run the following commands to get your project ready to use with msys2 on Windows. **Not tested on a clean PC.**
-**Make sure to clone using ssh**
+
+### Windows - MSYS2
+
+Here is an example of downloading, building, and running ArkAngel in Windows using MSYS2.
+
+Prerequisites:
+
+- [MSYS2](http://msys2.github.io/) has been installed and updated.
+- Git has been installed and configured (`pacman -S git`).
+- An SSH key has been [added to your Github account](https://help.github.com/articles/generating-an-ssh-key/).
+
+Download:
+
 ```
-pacman -S git cmake mingw-w64-x86_64-gcc mingw-w64-x86_64-boost mingw-w64-x86_64-sfml mingw-w64-x86_64-box2d mingw-w64-x86_64-jsoncpp
-git clone git@github.com:xxAtrain223/ArkAngel.git
-cd ArkAngel
-git submodule update --init
+$ pacman -S cmake mingw-w64-x86_64-{toolchain,ninja,boost,sfml,box2d,jsoncpp}
+$ cp /mingw64/share/SFML/cmake/Modules/FindSFML.cmake /mingw64/share/cmake-3.6/Modules/ # Workaround for package error
+$ git clone git@github.com:xxAtrain223/ArkAngel.git
+$ cd ArkAngel
+$ git submodule update --init --recursive
+```
+
+Build:
+
+```
+$ mkdir build
+$ cd build
+$ cmake -G 'Ninja' ..
+$ ninja ArkAngel
+$ cd ..
+```
+
+Run:
+
+```
+$ build/ArkAngel.exe
 ```
 
 Technologies
 ------------
+
 * **CMake-** An open-source, cross-platform family of tools designed to build, test and package software.
 * **Ginseng-** An entity component framework designed for use in games.
 * **Raspberry-** A lightweight C++ type erasure library.
