@@ -3,6 +3,8 @@
 #include "ConsoleState.hpp"
 #include "PauseState.hpp"
 
+#include <Box2D/Box2D.h>
+
 #include <string>
 #include <iostream>
 #include <regex>
@@ -56,7 +58,8 @@ Engine::Engine() :
     r = ScriptEngine->RegisterObjectProperty("MousePosition", "int wheel", asOFFSET(MousePosition, wheel)); assert(r >= 0);
     r = ScriptEngine->RegisterGlobalFunction("MousePosition getMousePosition()", asMETHOD(Engine, getMousePosition), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
 
-
+    r = ScriptEngine->RegisterObjectType("b2Body", sizeof(b2Body), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS); assert(r >= 0);
+    r = ScriptEngine->RegisterObjectMethod("b2Body", "void SetAngularVelocity(double)", asMETHOD(b2Body, SetAngularVelocity), asCALL_THISCALL); assert(r >= 0);
 
 #ifdef NDEBUG
     showFPS(false);

@@ -30,12 +30,7 @@ PhysicsSandbox::PhysicsSandbox(std::string suid, Engine *engine) :
     r = engine->ScriptEngine->RegisterGlobalFunction("void setPositionIterations(int)", asMETHOD(PhysicsSandbox, setPositionIterations), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void setCameraPosition(float, float)", asMETHOD(PhysicsSandbox, setCameraPosition), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("void setCameraZoom(float)", asMETHOD(PhysicsSandbox, setCameraZoom), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
-
-
-    r = engine->ScriptEngine->RegisterObjectType("b2Body", sizeof(b2Body), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS); assert(r >= 0);
-    r = engine->ScriptEngine->RegisterObjectMethod("b2Body", "void SetAngularVelocity(double)", asMETHOD(b2Body, SetAngularVelocity), asCALL_THISCALL); assert(r >= 0);
     r = engine->ScriptEngine->RegisterGlobalFunction("array<b2Body>@ getBodiesByName(string)", asMETHOD(PhysicsSandbox, getBodiesByName), asCALL_THISCALL_ASGLOBAL, this); assert(r >= 0);
-
 
     CScriptBuilder builder;
     r = builder.StartNewModule(engine->ScriptEngine, "PhysicsSandbox"); assert(r >= 0);
